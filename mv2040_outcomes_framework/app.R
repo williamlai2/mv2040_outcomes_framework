@@ -12,21 +12,21 @@ options(scipen = 999)
 
 #data
 ##read in data - this is reading from an extract of 19/259311
-data_raw <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data") %>% 
+data_raw <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "data") %>% 
     clean_names()
 
-indicator_list <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "indicator_list") %>% 
+indicator_list <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "indicator_list") %>% 
     clean_names() %>% 
     mutate(theme = str_to_title(theme))
 
-indicators_to_goals <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "inds_goals") %>% 
+indicators_to_goals <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "inds_goals") %>% 
     clean_names() %>% 
     mutate(theme = str_to_title(theme))
 
-goals <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "goals") %>% 
+goals <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "goals") %>% 
     clean_names()
 
-data_format <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data_format") %>% 
+data_format <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "data_format") %>% 
     clean_names()
 
 ## colours for themes
@@ -71,6 +71,10 @@ ind_vals <- function(indicator_id) {
     add_inf <- indicators_to_goals %>% 
         filter(id == {indicator_id}) %>% 
         left_join(goals, by = "sd_number")
+    #strategic direction
+    strat_dir <- add_inf %>% 
+        select(strategic_direction) %>% 
+        pull()
     #value unit
     val_unit <- fmt %>% 
         select(value_unit) %>% 
@@ -100,7 +104,7 @@ ind_vals <- function(indicator_id) {
     #return list
     return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
-                        "theme_colour" = colour_select)
+                        "theme_colour" = colour_select, "strategic_direction" = strat_dir)
 }
 
 #function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
@@ -132,9 +136,13 @@ shinyApp(
                          uiOutput("measure_output") #from below
                      ),
                      mainPanel(
-                         h2(textOutput('theme')), 
-                         h3(textOutput('category')),
-                         h3(textOutput('title')),
+                         h2(textOutput('theme')),
+                         strong("Strategic direction:"), 
+                         h4(textOutput('strategic_direction')),
+                         strong("Category:"), 
+                         h4(textOutput('category')),
+                         strong("Measure:"), 
+                         h4(textOutput('title')),
                          plotlyOutput("measure_graph"),
                          strong("Source:"),
                          h5(htmlOutput('source')),
@@ -188,7 +196,10 @@ shinyApp(
                 make_plotly(get_vals())
             )
         })
-        
+        #text - strategic direction
+        output$strategic_direction <- renderText({
+            glue("{get_vals()$strategic_direction}")
+        })
         #text - theme
         output$theme <- renderText({
             glue("{get_vals()$theme}")
