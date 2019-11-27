@@ -13,7 +13,8 @@ options(scipen = 999)
 #data
 ##read in data - this is reading from an extract of 19/259311
 data_raw <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "data") %>% 
-    clean_names()
+    clean_names() %>% 
+    mutate(err_low = round(value - lower, 1), err_high = round(upper - value, 1))
 
 indicator_list <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "indicator_list") %>% 
     clean_names() %>% 
@@ -118,7 +119,8 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
         # a trace that overwrites the actual
         add_trace(data = ind_vals_output$data %>% filter(type != "target") ,  x = ~year, y = ~value,
                   name = 'Actual', type = 'scatter', mode = 'lines+markers',
-                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 4, dash = 'solid')) %>%
+                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 4, dash = 'solid'),
+                  error_y = list(type = "data", symmetric = FALSE, array = ~err_high, arrayminus = ~err_low)) %>%
         layout(xaxis = list(title = 'Year'),
                yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}))
 }
@@ -156,7 +158,10 @@ shinyApp(
             ),
             tabPanel("About", 
                      mainPanel(
-                         helpText("The MV2040 framework has not been finalised and is subject to change. To be added, additional data (employment) and also error bars. Fix the error message at the beginning too.")
+                         h4("The MV2040 framework has not been finalised and is subject to change"),
+                         h4("95% confidence intervals have been included on datasets were available. Data has been rounded in most cases."),
+                         strong("To do:"),
+                         h4("Fix the error message at the beginning too")
                      ))
         )
     ),
