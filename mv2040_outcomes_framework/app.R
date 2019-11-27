@@ -12,21 +12,21 @@ options(scipen = 999)
 
 #data
 ##read in data - this is reading from an extract of 19/259311
-data_raw <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data") %>% 
+data_raw <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data") %>% 
     clean_names()
 
-indicator_list <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "indicator_list") %>% 
+indicator_list <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "indicator_list") %>% 
     clean_names() %>% 
     mutate(theme = str_to_title(theme))
 
-indicators_to_goals <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "inds_goals") %>% 
+indicators_to_goals <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "inds_goals") %>% 
     clean_names() %>% 
     mutate(theme = str_to_title(theme))
 
-goals <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "goals") %>% 
+goals <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "goals") %>% 
     clean_names()
 
-data_format <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data_format") %>% 
+data_format <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data_format") %>% 
     clean_names()
 
 ## colours for themes
