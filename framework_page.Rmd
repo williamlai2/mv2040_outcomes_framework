@@ -1,0 +1,194 @@
+---
+title: "MV2040 outcomes framework"
+output: html_notebook
+---
+
+This is just a test!!!!
+
+Run it from the desktop rather than from the network
+
+```{r, include = FALSE}
+#libraries
+pacman::p_load(tidyverse, glue, readxl, janitor, plotly, scales)
+
+#disable scientific notation
+options(scipen = 999)
+```
+
+```{r, include = FALSE}
+#read in data - this is reading from an extract of 19/259311
+data_raw <- read_excel("data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data") %>% 
+  clean_names()
+
+indicator_list <- read_excel("data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "indicator_list") %>% 
+  clean_names()
+
+indicators_to_goals <- read_excel("data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "inds_goals") %>% 
+  clean_names()
+
+goals <- read_excel("data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "goals") %>% 
+  clean_names()
+
+data_format <- read_excel("data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "data_format") %>% 
+  clean_names()
+```
+
+```{r}
+data_raw
+indicators_to_goals
+indicator_list
+goals
+data_format
+```
+
+```{r}
+# colours for themes
+colour_table <- tibble(theme = c("FAIR", "THRIVING", "CONNECTED", "GREEN", "BEAUTIFUL"),
+                       col_code = c("rgb(229, 80, 72, max = 255)", "rgb(49, 120, 143, max = 255)", "rgb(106, 68, 121, max = 255)", "rgb(78, 165, 70, max = 255)", "rgb(227, 165, 30, max = 255)"))
+```
+
+
+```{r}
+# function to get values for each indicator - returns a list
+ind_vals <- function(indicator_id) {
+  #data
+  data <- data_raw %>% 
+    filter(id == {indicator_id})
+  #indicator details
+  ind <- indicator_list %>% 
+    filter(id == {indicator_id})
+  #source
+  source <- ind %>% 
+    select(source) %>% 
+    pull()
+  #commentary
+  commentary <- ind %>% 
+    select(commentary) %>% 
+    pull()
+  #rationale
+  rationale <- ind %>% 
+    select(rationale) %>% 
+    pull()
+  #format
+  fmt <- data_format %>% 
+    filter(id == {indicator_id})
+  #additional info
+  add_inf <- indicators_to_goals %>% 
+    filter(id == {indicator_id}) %>% 
+    left_join(goals, by = "sd_number")
+  #value unit
+  val_unit <- fmt %>% 
+    select(value_unit) %>% 
+    pull()
+  #title
+  title_det <- ind %>% 
+    select (measure) %>% 
+    pull()
+  #colour
+  colour_select <- add_inf %>% 
+    select(theme) %>% 
+    left_join(colour_table) %>% 
+    select(col_code) %>% 
+    pull()
+  #return list
+  return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "rationale" = rationale, "format" = fmt,
+                      "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme_colour" = colour_select)
+}
+```
+
+
+```{r}
+# get vals for F012
+f012 <- ind_vals("F012")
+
+# access the parts
+f012$all_data
+f012$indicator_details
+f012$source
+f012$commentary
+f012$rationale
+f012$format
+f012$additional_info
+f012$value_unit
+f012$title
+f012$theme_colour
+
+```
+
+
+```{r}
+#plotly graph
+plot_ly() %>%
+  # a trace with all the data, dashed
+  add_trace(data = f012$data,  x = ~year, y = ~value,
+            name = 'Target', type = 'scatter', mode = 'lines+markers',
+            line = list(shape = 'linear', color = f012$theme_colour, width= 2, dash = 'dash')) %>%
+  # a trace that overwrites the actual
+  add_trace(data = f012$data %>% filter(type != "target"),  x = ~year, y = ~value,
+            name = 'Actual', type = 'scatter', mode = 'lines+markers',
+            line = list(shape = 'linear', color = f012$theme_colour, width= 4, dash = 'solid')) %>%
+  layout(title = f012$title,
+         xaxis = list(title = 'Year'),
+         yaxis = list (title = f012$value_unit, rangemode = "tozero"),
+         annotations = list(x = 1, y = -0.1, text = glue("Source: {f012$source}"), 
+                            showarrow = F, xref='paper', yref='paper', xanchor='right', yanchor='auto', xshift=0, yshift=0))
+```
+
+
+```{r}
+#function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
+make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
+  #plotly graph
+  plot_ly() %>%
+    # a trace with all the data, dashed
+    add_trace(data = ind_vals_output$data,  x = ~year, y = ~value,
+              name = 'Target', type = 'scatter', mode = 'lines+markers',
+              line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 2, dash = 'dash')) %>% 
+      # a trace that overwrites the actual
+    add_trace(data = ind_vals_output$data %>% filter(type != "target") ,  x = ~year, y = ~value,
+              name = 'Actual', type = 'scatter', mode = 'lines+markers',
+              line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 4, dash = 'solid')) %>%
+    layout(title = ind_vals_output$title,
+           xaxis = list(title = 'Year'),
+           yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}),
+         annotations = list(x = 1, y = -0.085, text = glue("Source: {ind_vals_output$source}"), 
+                            showarrow = F, xref='paper', yref='paper', xanchor='right', yanchor='auto', xshift=0, yshift=0))
+}
+
+# to do - add error bars where available
+
+#test
+make_plotly(f012)
+```
+
+```{r}
+#full test of the funcctions
+f011 <- ind_vals("F011")
+make_plotly(f011)
+
+f013 <- ind_vals("F013")
+make_plotly(f013)
+
+f031 <- ind_vals("F031")
+make_plotly(f031)
+
+f051 <- ind_vals("F051")
+make_plotly(f051)
+
+t081 <- ind_vals("T081")
+make_plotly(t081)
+
+c102 <- ind_vals("C102")
+make_plotly(c102)
+
+g151 <- ind_vals("G151")
+make_plotly(g151)
+
+b203 <- ind_vals("B203")
+make_plotly(b203)
+```
+
+
+ 
+
+
