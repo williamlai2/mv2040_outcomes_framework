@@ -160,7 +160,10 @@ shinyApp(
                      mainPanel(
                          h4("The MV2040 framework has not been finalised and is subject to change"),
                          h4("95% confidence intervals have been included on datasets were available. Data has been rounded in most cases."),
+                         br(),
                          strong("To do:"),
+                         h4("add main 'dashboard' page"),
+                         h4("add mv logo and mv2040 link"),
                          h4("Fix the error message at the beginning too")
                      ))
         )
