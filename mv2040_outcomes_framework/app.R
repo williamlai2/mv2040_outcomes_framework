@@ -16,10 +16,12 @@ data_raw <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline
     clean_names()
 
 indicator_list <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "indicator_list") %>% 
-    clean_names()
+    clean_names() %>% 
+    mutate(theme = str_to_title(theme))
 
 indicators_to_goals <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "inds_goals") %>% 
-    clean_names()
+    clean_names() %>% 
+    mutate(theme = str_to_title(theme))
 
 goals <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT baseline- August 2019.xlsx", sheet = "goals") %>% 
     clean_names()
@@ -28,14 +30,14 @@ data_format <- read_excel("../data_in/MV2040 Indicators and Outcomes DRAFT basel
     clean_names()
 
 ## colours for themes
-colour_table <- tibble(theme = c("FAIR", "THRIVING", "CONNECTED", "GREEN", "BEAUTIFUL"),
+colour_table <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
                        col_code = c("#E55048", "#31788F", "#6A4479", "#4EA546", "#E3A51E"))
 
 # the theme list
 theme_list <- indicator_list %>% 
     distinct(theme) %>% 
     pull()
-    
+
 # the measure list
 measure_list <- indicator_list %>% 
     select(measure) %>% 
@@ -124,9 +126,10 @@ shinyApp(
             "MV2040 Outcomes Framework",
             tabPanel("Measures",
                      sidebarPanel(
-                         selectInput(inputId = "selected_measure",
-                                     label = "Select a measure",
-                                     choices = measure_list)
+                         selectInput(inputId = "selected_theme",
+                                     label = "Select a theme",
+                                     choices = theme_list),
+                         uiOutput("measure_output") #from below
                      ),
                      mainPanel(
                          h2(textOutput('theme')), 
@@ -149,6 +152,20 @@ shinyApp(
     
     # Define server logic 
     server <- function(input, output) {
+        #filtered_measure list
+        filtered_measures <- reactive({
+            indicator_list %>% 
+                filter(theme == input$selected_theme) %>% 
+                select(measure) %>% 
+                pull()
+        })
+        #takes filted input by theme and outputs measures for selection
+        output$measure_output <- renderUI({
+            selectInput(inputId = "selected_measure",
+                        label = "Select a measure",
+                        choices = filtered_measures())
+        })
+        
         #selected_id from measure
         selected_id <- reactive({
             indicator_list %>% 
