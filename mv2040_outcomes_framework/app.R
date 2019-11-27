@@ -146,7 +146,10 @@ shinyApp(
                          h5(htmlOutput('rationale')),
                      )
             ),
-            tabPanel("About", "The MV2040 framework has not been finalised and is subject to change.")
+            tabPanel("About", 
+                     mainPanel(
+                         helpText("The MV2040 framework has not been finalised and is subject to change. To be added, additional data (employment) and also error bars. Fix the error message at the beginning too.")
+                     ))
         )
     ),
     
