@@ -131,53 +131,6 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
 }
 
 #the app ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-<<<<<<< HEAD
-shinyApp(
-    ui = tagList(
-        navbarPage(
-            "MV2040 Outcomes Framework",
-            tabPanel("Measures",
-                     sidebarPanel(
-                         selectInput(inputId = "selected_theme",
-                                     label = "Select a theme",
-                                     choices = theme_list),
-                         uiOutput("measure_output") #from below
-                     ),
-                     mainPanel(
-                         #supress error messages
-                         tags$style(type="text/css",
-                                    ".shiny-output-error { visibility: hidden; }",
-                                    ".shiny-output-error:before { visibility: hidden; }"
-                         ),
-                         h2(textOutput('theme')),
-                         strong("Strategic direction:"), 
-                         h4(textOutput('strategic_direction')),
-                         strong("Category:"), 
-                         h4(textOutput('category')),
-                         strong("Measure:"), 
-                         h4(textOutput('title')),
-                         plotlyOutput("measure_graph"),
-                         strong("Source:"),
-                         h5(htmlOutput('source')),
-                         strong("Definition:"),
-                         h5(htmlOutput('definition')),
-                         strong("Commentary:"),
-                         h5(htmlOutput('commentary')),
-                         strong("Rationale:"), 
-                         h5(htmlOutput('rationale')),
-                     )
-            ),
-            tabPanel("About", 
-                     mainPanel(
-                         h4("The MV2040 framework has not been finalised and is subject to change"),
-                         h4("95% confidence intervals have been included on datasets were available. Data has been rounded in most cases."),
-                         br(),
-                         strong("To do:"),
-                         h4("add main 'dashboard' page"),
-                         h4("add mv logo and mv2040 link"),
-                         h4("Fix the error message at the beginning too")
-                     ))
-=======
 
 # dashboard input
 header <- dashboardHeader(
@@ -189,17 +142,16 @@ body <- dashboardBody(
     tags$style(type="text/css",
                ".shiny-output-error { visibility: hidden; }",
                ".shiny-output-error:before { visibility: hidden; }"
-               ),
+    ),
     #select
     fluidRow(
         box(
             selectInput(inputId = "selected_theme",
                         label = "Select a theme",
                         choices = theme_list),
-                ),
+        ),
         box(
             uiOutput("measure_output")           
->>>>>>> dash_test
         )
     ),
     
@@ -212,7 +164,7 @@ body <- dashboardBody(
     
     # Boxes need to be put in a row (or column)
     fluidRow(plotlyOutput("measure_graph"),
-             ),
+    ),
     
     # Boxes with solid color, using `background`
     fluidRow(
@@ -313,7 +265,7 @@ server <- function(input, output) {
     output$rationale <- renderText({
         glue("{get_vals()$rationale}")
     })
-
+    
     # the theme box
     output$vbox_theme <- renderInfoBox({
         if (input$selected_theme  == "Fair")
