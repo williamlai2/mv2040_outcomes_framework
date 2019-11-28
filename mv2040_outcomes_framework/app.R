@@ -141,8 +141,7 @@ shinyApp(
                          #supress error messages
                          tags$style(type="text/css",
                                     ".shiny-output-error { visibility: hidden; }",
-                                    ".shiny-output-error:before { visibility: hidden; }"
-                         ),
+                                    ".shiny-output-error:before { visibility: hidden; }"),
                          h2(textOutput('theme')),
                          strong("Strategic direction:"), 
                          h4(textOutput('strategic_direction')),
