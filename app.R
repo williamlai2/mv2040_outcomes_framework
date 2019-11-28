@@ -31,6 +31,24 @@ goals <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.
 data_format <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "data_format") %>% 
     clean_names()
 
+#change progress data
+change_progress_data_full <- data_raw %>% 
+    filter(type %in% c("baseline", "progress")) %>% 
+    select(id, year, value, type) %>% 
+    arrange(desc(year)) %>% 
+    group_by(id, type) %>% 
+    slice(1) %>% #takes baseline and latest progress figure
+    select(-year) %>% 
+    pivot_wider(names_from = type, values_from = value) %>% 
+    left_join(indicator_list, by = "id") %>% 
+    select(id, baseline, progress, desired) %>% 
+    mutate(change = case_when(desired == "Increase" & progress > baseline ~ "Good",
+                              desired == "Increase" & progress < baseline ~ "Bad",
+                              desired == "Decrease" & progress < baseline ~ "Good",
+                              desired == "Decrease" & progress > baseline ~ "Bad",
+                              TRUE ~ "N/A"))
+
+
 ## colours for themes
 colour_table <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
                        col_code = c("#E55048", "#31788F", "#6A4479", "#4EA546", "#E3A51E"))
@@ -107,10 +125,19 @@ ind_vals <- function(indicator_id) {
         left_join(colour_table) %>% 
         select(col_code) %>% 
         pull()
+    #desired change
+    desired <- ind %>% 
+        select(desired) %>% 
+        pull()
+    #change progress
+    change_progress <- change_progress_data_full %>% 
+        filter(id == {indicator_id}) %>% 
+        select(change) %>% 
+        pull()
     #return list
     return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
-                        "theme_colour" = colour_select, "strategic_direction" = strat_dir)
+                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress)
 }
 
 #function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
@@ -162,7 +189,7 @@ body <- dashboardBody(
         infoBoxOutput("vbox_cat")
     ),
     
-    # Boxes need to be put in a row (or column)
+    # the graph
     fluidRow(plotlyOutput("measure_graph"),
     ),
     
@@ -189,6 +216,17 @@ body <- dashboardBody(
         )
     ),
     
+    #about progress towards desired change
+    fluidRow(
+        infoBox("Desired change",
+                textOutput('desired_change'),
+                color = "black",
+                icon = shiny::icon("cloud"),
+                ),
+        infoBoxOutput("vbox_progress")
+    ),
+    
+    #commentary and rationale below the graph
     fluidRow(
         box(
             title = "Commentary",
@@ -201,6 +239,7 @@ body <- dashboardBody(
             textOutput('rationale')
         )
     ),
+    
     #my comments
     fluidRow(
         box(
@@ -279,6 +318,14 @@ server <- function(input, output) {
     output$rationale <- renderText({
         glue("{get_vals()$rationale}")
     })
+    #text - desired change
+    output$desired_change <- renderText({
+        glue("{get_vals()$desired_change}")
+    })
+    #text - change progress
+    output$change_progress <- renderText({
+        glue("{get_vals()$change_progress}")
+    })
     
     # the theme box
     output$vbox_theme <- renderInfoBox({
@@ -302,6 +349,7 @@ server <- function(input, output) {
             infoBox(title = "Theme", textOutput('theme'), width = 4, color = "yellow",  fill = TRUE)
         }
     })
+    
     
     # the strategic direction box
     output$vbox_sd <- renderInfoBox({
@@ -346,6 +394,22 @@ server <- function(input, output) {
         }
         else {
             infoBox(title = "Category", textOutput('category'), width = 4, color = "yellow",  fill = TRUE)
+        }
+    })
+    
+    
+    # the progress towards desired change box
+    output$vbox_progress <- renderInfoBox({
+        if (get_vals()$change_progress  == "Good")
+        {
+            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("check-circle"), color = "aqua")
+        }
+        else if (get_vals()$change_progress  == "Bad")
+        {
+            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("times-circle"), color = "fuchsia")
+        }
+        else {
+            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("arrows-h"), color = "orange")
         }
     })
     
