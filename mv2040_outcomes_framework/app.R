@@ -6,6 +6,7 @@ library(readxl)
 library(janitor)
 library(plotly)
 library(scales)
+library(shinydashboard)
 
 #disable scientific notation
 options(scipen = 999)
@@ -33,6 +34,10 @@ data_format <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August
 ## colours for themes
 colour_table <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
                        col_code = c("#E55048", "#31788F", "#6A4479", "#4EA546", "#E3A51E"))
+
+## colours for shinydashboard boxes
+colour_boxes <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
+                       col_code = c("red", "blue", "violet", "green", "yellow"))
 
 # the theme list
 theme_list <- indicator_list %>% 
@@ -126,121 +131,216 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
 }
 
 #the app ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-shinyApp(
-    ui = tagList(
-        navbarPage(
-            "MV2040 Outcomes Framework",
-            tabPanel("Measures",
-                     sidebarPanel(
-                         selectInput(inputId = "selected_theme",
-                                     label = "Select a theme",
-                                     choices = theme_list),
-                         uiOutput("measure_output") #from below
-                     ),
-                     mainPanel(
-                         #supress error messages
-                         tags$style(type="text/css",
-                                    ".shiny-output-error { visibility: hidden; }",
-                                    ".shiny-output-error:before { visibility: hidden; }"
-                         ),
-                         h2(textOutput('theme')),
-                         strong("Strategic direction:"), 
-                         h4(textOutput('strategic_direction')),
-                         strong("Category:"), 
-                         h4(textOutput('category')),
-                         strong("Measure:"), 
-                         h4(textOutput('title')),
-                         plotlyOutput("measure_graph"),
-                         strong("Source:"),
-                         h5(htmlOutput('source')),
-                         strong("Definition:"),
-                         h5(htmlOutput('definition')),
-                         strong("Commentary:"),
-                         h5(htmlOutput('commentary')),
-                         strong("Rationale:"), 
-                         h5(htmlOutput('rationale')),
-                     )
-            ),
-            tabPanel("About", 
-                     mainPanel(
-                         h4("The MV2040 framework has not been finalised and is subject to change"),
-                         h4("95% confidence intervals have been included on datasets were available. Data has been rounded in most cases."),
-                         br(),
-                         strong("To do:"),
-                         h4("add main 'dashboard' page"),
-                         h4("add mv logo and mv2040 link"),
-                         h4("Fix the error message at the beginning too")
-                     ))
+
+# dashboard input
+header <- dashboardHeader(
+    title = "MV2040 outcomes framework"
+)
+
+body <- dashboardBody(
+    #supress error messages
+    tags$style(type="text/css",
+               ".shiny-output-error { visibility: hidden; }",
+               ".shiny-output-error:before { visibility: hidden; }"
+               ),
+    #select
+    fluidRow(
+        box(
+            selectInput(inputId = "selected_theme",
+                        label = "Select a theme",
+                        choices = theme_list),
+                ),
+        box(
+            uiOutput("measure_output")           
         )
     ),
     
-    # Define server logic 
-    server <- function(input, output) {
-        #filtered_measure list
-        filtered_measures <- reactive({
-            indicator_list %>% 
-                filter(theme == input$selected_theme) %>% 
-                select(measure) %>% 
-                pull()
-        })
-        #takes filted input by theme and outputs measures for selection
-        output$measure_output <- renderUI({
-            selectInput(inputId = "selected_measure",
-                        label = "Select a measure",
-                        choices = filtered_measures())
-        })
+    # infoBoxes dynamic colours based on function in server
+    fluidRow(
+        infoBoxOutput("vbox_theme"),
+        infoBoxOutput("vbox_sd"),
+        infoBoxOutput("vbox_cat")
+    ),
+    
+    # Boxes need to be put in a row (or column)
+    fluidRow(plotlyOutput("measure_graph"),
+             ),
+    
+    # Boxes with solid color, using `background`
+    fluidRow(
+        box(
+            title = "Measure",
+            width = 4,
+            background = "black",
+            textOutput('title')
+        ),
+        box(
+            title = "Source",
+            width = 4,
+            background = "black",
+            textOutput('source')
+        ),
         
-        #selected_id from measure
-        selected_id <- reactive({
-            indicator_list %>% 
-                filter(measure == input$selected_measure) %>% 
-                select(id) %>% 
-                pull()
-        })
-        
-        #get values - from id in function
-        get_vals <- reactive({
-            ind_vals(selected_id())
-        })
-        
-        #plotly graph
-        output$measure_graph <- renderPlotly({  
-            print(
-                make_plotly(get_vals())
-            )
-        })
-        #text - strategic direction
-        output$strategic_direction <- renderText({
-            glue("{get_vals()$strategic_direction}")
-        })
-        #text - theme
-        output$theme <- renderText({
-            glue("{get_vals()$theme}")
-        })
-        #text - category
-        output$category <- renderText({
-            glue("{get_vals()$category}")
-        })
-        #text - title
-        output$title <- renderText({
-            glue("{get_vals()$title}")
-        })
-        #text - definition
-        output$definition <- renderText({
-            glue("{get_vals()$definition}")
-        })
-        #text - source
-        output$source <- renderText({
-            glue("{get_vals()$source}")
-        })
-        #text - commentary
-        output$commentary <- renderText({
-            glue("{get_vals()$commentary}")
-        })
-        #text - rationale
-        output$rationale <- renderText({
-            glue("{get_vals()$rationale}")
-        })
-    }
+        box(
+            title = "Definition",
+            width = 4,
+            background = "black",
+            textOutput('definition')
+        )
+    ),
+    fluidRow(
+        box(
+            title = "Notes:",
+            "Work in progress!"
+        )
+    )
+    
 )
 
+
+# Define server logic 
+server <- function(input, output) {
+    #filtered_measure list
+    filtered_measures <- reactive({
+        indicator_list %>% 
+            filter(theme == input$selected_theme) %>% 
+            select(measure) %>% 
+            pull()
+    })
+    #takes filted input by theme and outputs measures for selection
+    output$measure_output <- renderUI({
+        selectInput(inputId = "selected_measure",
+                    label = "Select a measure",
+                    choices = filtered_measures())
+    })
+    
+    #selected_id from measure
+    selected_id <- reactive({
+        indicator_list %>% 
+            filter(measure == input$selected_measure) %>% 
+            select(id) %>% 
+            pull()
+    })
+    
+    #get values - from id in function
+    get_vals <- reactive({
+        ind_vals(selected_id())
+    })
+    
+    #plotly graph
+    output$measure_graph <- renderPlotly({  
+        print(
+            make_plotly(get_vals())
+        )
+    })
+    #text - strategic direction
+    output$strategic_direction <- renderText({
+        glue("{get_vals()$strategic_direction}")
+    })
+    #text - theme
+    output$theme <- renderText({
+        glue("{get_vals()$theme}")
+    })
+    #text - category
+    output$category <- renderText({
+        glue("{get_vals()$category}")
+    })
+    #text - title
+    output$title <- renderText({
+        glue("{get_vals()$title}")
+    })
+    #text - definition
+    output$definition <- renderText({
+        glue("{get_vals()$definition}")
+    })
+    #text - source
+    output$source <- renderText({
+        glue("{get_vals()$source}")
+    })
+    #text - commentary
+    output$commentary <- renderText({
+        glue("{get_vals()$commentary}")
+    })
+    #text - rationale
+    output$rationale <- renderText({
+        glue("{get_vals()$rationale}")
+    })
+
+    # the theme box
+    output$vbox_theme <- renderInfoBox({
+        if (input$selected_theme  == "Fair")
+        {
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "red",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Thriving")
+        {
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "blue",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Connected")
+        {
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "purple",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Green")
+        {
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "green",  fill = TRUE)
+        }
+        else {
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "yellow",  fill = TRUE)
+        }
+    })
+    
+    # the strategic direction box
+    output$vbox_sd <- renderInfoBox({
+        if (input$selected_theme  == "Fair")
+        {
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "red",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Thriving")
+        {
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "blue",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Connected")
+        {
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "purple",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Green")
+        {
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "green",  fill = TRUE)
+        }
+        else {
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "yellow",  fill = TRUE)
+        }
+    })
+    
+    # the category box
+    output$vbox_cat <- renderInfoBox({
+        if (input$selected_theme  == "Fair")
+        {
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "red",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Thriving")
+        {
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "blue",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Connected")
+        {
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "purple",  fill = TRUE)
+        }
+        else if (input$selected_theme  == "Green")
+        {
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "green",  fill = TRUE)
+        }
+        else {
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "yellow",  fill = TRUE)
+        }
+    })
+    
+}
+
+
+# for the app
+ui <- dashboardPage(header,
+                    dashboardSidebar(disable = TRUE),
+                    body)
+
+shinyApp(ui, server)
