@@ -205,7 +205,7 @@ body <- dashboardBody(
     fluidRow(
         box(
             title = "Notes:",
-            "Work in progress!"
+            "Wait until the graph has loaded!!! Work in progress!"
         )
     )
     
