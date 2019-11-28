@@ -166,7 +166,7 @@ body <- dashboardBody(
     fluidRow(plotlyOutput("measure_graph"),
     ),
     
-    # Boxes with solid color, using `background`
+    # info about the graph
     fluidRow(
         box(
             title = "Measure",
@@ -188,6 +188,20 @@ body <- dashboardBody(
             textOutput('definition')
         )
     ),
+    
+    fluidRow(
+        box(
+            title = "Commentary",
+            width = 6,
+            textOutput('commentary')
+        ),
+        box(
+            title = "Rationale",
+            width = 6,
+            textOutput('rationale')
+        )
+    ),
+    #my comments
     fluidRow(
         box(
             title = "Notes:",
