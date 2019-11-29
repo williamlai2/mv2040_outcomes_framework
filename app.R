@@ -170,7 +170,12 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
 
 # dashboard input
 header <- dashboardHeader(
-    title = "MV2040 outcomes framework"
+    title = "MV2040 outcomes framework",
+    titleWidth = 350,
+    tags$li(a(img(src = 'mvcc_logo.jpg',
+                  height = "45px"),
+              style = "padding-top:2px; padding-bottom:2px;"),
+            class = "dropdown")
 )
 
 body <- dashboardBody(
