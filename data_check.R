@@ -7,6 +7,7 @@ library(janitor)
 library(plotly)
 library(scales)
 library(shinydashboard)
+library(lubridate)
 
 #disable scientific notation
 options(scipen = 999)
@@ -46,7 +47,7 @@ change_progress_data_full <- data_raw %>%
                             desired == "Increase" & progress < baseline ~ "Bad",
                             desired == "Decrease" & progress < baseline ~ "Good",
                             desired == "Decrease" & progress > baseline ~ "Bad",
-                            TRUE ~ NA_character_))
+                            TRUE ~ "N/A"))
 
 ## colours for themes
 colour_table <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
@@ -66,3 +67,9 @@ measure_list <- indicator_list %>%
   select(measure) %>% 
   pull()
 
+#test
+data_raw %>% 
+  filter(type == "baseline") %>% 
+  mutate(year = year(year)) %>% 
+  select(year) %>% 
+  pull()

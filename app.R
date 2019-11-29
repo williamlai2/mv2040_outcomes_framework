@@ -7,6 +7,7 @@ library(janitor)
 library(plotly)
 library(scales)
 library(shinydashboard)
+library(lubridate)
 
 #disable scientific notation
 options(scipen = 999)
@@ -134,10 +135,18 @@ ind_vals <- function(indicator_id) {
         filter(id == {indicator_id}) %>% 
         select(change) %>% 
         pull()
+    #baseline year
+    base_year <- data_raw %>%
+        filter(id == {indicator_id}) %>% 
+        filter(type == "baseline") %>% 
+        mutate(year = year(year)) %>% 
+        select(year) %>% 
+        pull()
+        
     #return list
     return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
-                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress)
+                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress, "baseline_year" = base_year)
 }
 
 #function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
@@ -184,9 +193,9 @@ body <- dashboardBody(
     
     # infoBoxes dynamic colours based on function in server
     fluidRow(
-        infoBoxOutput("vbox_theme"),
-        infoBoxOutput("vbox_sd"),
-        infoBoxOutput("vbox_cat")
+        infoBoxOutput("ibox_theme"),
+        infoBoxOutput("ibox_sd"),
+        infoBoxOutput("ibox_cat")
     ),
     
     # the graph
@@ -218,12 +227,8 @@ body <- dashboardBody(
     
     #about progress towards desired change
     fluidRow(
-        infoBox("Desired change",
-                textOutput('desired_change'),
-                color = "black",
-                icon = shiny::icon("cloud"),
-                ),
-        infoBoxOutput("vbox_progress")
+        infoBoxOutput("ibox_desired"),
+        infoBoxOutput("ibox_progress")
     ),
     
     #commentary and rationale below the graph
@@ -247,7 +252,6 @@ body <- dashboardBody(
             "Wait until the graph has loaded!!! Work in progress!"
         )
     )
-    
 )
 
 
@@ -318,9 +322,9 @@ server <- function(input, output) {
     output$rationale <- renderText({
         glue("{get_vals()$rationale}")
     })
-    #text - desired change
+    #text - desired change with baseline number
     output$desired_change <- renderText({
-        glue("{get_vals()$desired_change}")
+        glue("{get_vals()$desired_change} from {get_vals()$baseline_year} figure towards target")
     })
     #text - change progress
     output$change_progress <- renderText({
@@ -328,7 +332,7 @@ server <- function(input, output) {
     })
     
     # the theme box
-    output$vbox_theme <- renderInfoBox({
+    output$ibox_theme <- renderInfoBox({
         if (input$selected_theme  == "Fair")
         {
             infoBox(title = "Theme", textOutput('theme'), width = 4, color = "red",  fill = TRUE)
@@ -352,7 +356,7 @@ server <- function(input, output) {
     
     
     # the strategic direction box
-    output$vbox_sd <- renderInfoBox({
+    output$ibox_sd <- renderInfoBox({
         if (input$selected_theme  == "Fair")
         {
             infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "red",  fill = TRUE)
@@ -375,7 +379,7 @@ server <- function(input, output) {
     })
     
     # the category box
-    output$vbox_cat <- renderInfoBox({
+    output$ibox_cat <- renderInfoBox({
         if (input$selected_theme  == "Fair")
         {
             infoBox(title = "Category", textOutput('category'), width = 4, color = "red",  fill = TRUE)
@@ -397,16 +401,26 @@ server <- function(input, output) {
         }
     })
     
+    # desired change box
+    output$ibox_desired <- renderInfoBox({
+        if (get_vals()$desired_change  == "Increase")
+        {
+            infoBox(title = "Desired change", textOutput('desired_change'), icon = shiny::icon("arrow-up"), color = "black")
+        }
+        else {
+            infoBox(title = "Desired change", textOutput('desired_change'), icon = shiny::icon("arrow-down"), color = "black")
+        }
+    })
     
     # the progress towards desired change box
-    output$vbox_progress <- renderInfoBox({
+    output$ibox_progress <- renderInfoBox({
         if (get_vals()$change_progress  == "Good")
         {
             infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("check-circle"), color = "aqua")
         }
         else if (get_vals()$change_progress  == "Bad")
         {
-            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("times-circle"), color = "fuchsia")
+            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("times-circle"), color = "maroon")
         }
         else {
             infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("arrows-h"), color = "orange")
