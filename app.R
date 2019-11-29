@@ -7,7 +7,6 @@ library(janitor)
 library(plotly)
 library(scales)
 library(shinydashboard)
-library(lubridate)
 
 #disable scientific notation
 options(scipen = 999)
@@ -43,11 +42,12 @@ change_progress_data_full <- data_raw %>%
     pivot_wider(names_from = type, values_from = value) %>% 
     left_join(indicator_list, by = "id") %>% 
     select(id, baseline, progress, desired) %>% 
+    ungroup() %>% 
     mutate(change = case_when(desired == "Increase" & progress > baseline ~ "Good",
                               desired == "Increase" & progress < baseline ~ "Bad",
                               desired == "Decrease" & progress < baseline ~ "Good",
                               desired == "Decrease" & progress > baseline ~ "Bad",
-                              TRUE ~ "N/A"))
+                              TRUE ~ "N/A")) 
 
 
 ## colours for themes
@@ -123,7 +123,7 @@ ind_vals <- function(indicator_id) {
     #colour
     colour_select <- add_inf %>% 
         select(theme) %>% 
-        left_join(colour_table) %>% 
+        left_join(colour_table, by = "theme") %>% 
         select(col_code) %>% 
         pull()
     #desired change
@@ -139,7 +139,7 @@ ind_vals <- function(indicator_id) {
     base_year <- data_raw %>%
         filter(id == {indicator_id}) %>% 
         filter(type == "baseline") %>% 
-        mutate(year = year(year)) %>% 
+        mutate(year = as.numeric(format(year, '%Y'))) %>% 
         select(year) %>% 
         pull()
         
@@ -156,11 +156,13 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
         # a trace with all the data, dashed
         add_trace(data = ind_vals_output$data,  x = ~year, y = ~value,
                   name = 'Target', type = 'scatter', mode = 'lines+markers',
-                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 2, dash = 'dash')) %>% 
+                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 2, dash = 'dash'),
+                  marker = list(color = "aqua", size = 8)) %>% 
         # a trace that overwrites the actual
         add_trace(data = ind_vals_output$data %>% filter(type != "target") ,  x = ~year, y = ~value,
                   name = 'Actual', type = 'scatter', mode = 'lines+markers',
                   line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 4, dash = 'solid'),
+                  marker = list(color = ind_vals_output$theme_colour, size = 8),
                   error_y = list(type = "data", symmetric = FALSE, array = ~err_high, arrayminus = ~err_low)) %>%
         layout(xaxis = list(title = 'Year'),
                yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}))
@@ -171,7 +173,7 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
 # dashboard input
 header <- dashboardHeader(
     title = "MV2040 outcomes framework",
-    titleWidth = 350,
+    titleWidth = 300,
     tags$li(a(img(src = 'mvcc_logo.jpg',
                   height = "45px"),
               style = "padding-top:2px; padding-bottom:2px;"),
