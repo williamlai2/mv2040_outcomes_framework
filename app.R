@@ -152,17 +152,22 @@ ind_vals <- function(indicator_id) {
 #function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
 make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
     #plotly graph
+    graph_data <- ind_vals_output$data
+    graph_data_actual <- ind_vals_output$data %>% filter(type != "target")
+    date_label <- format(graph_data_actual$year, "%b %Y")
     plot_ly() %>%
         # a trace with all the data, dashed
-        add_trace(data = ind_vals_output$data,  x = ~year, y = ~value,
+        add_trace(data = graph_data,  x = ~year, y = ~value,
                   name = 'Target', type = 'scatter', mode = 'lines+markers',
                   line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 2, dash = 'dash'),
                   marker = list(color = "aqua", size = 8)) %>% 
         # a trace that overwrites the actual
-        add_trace(data = ind_vals_output$data %>% filter(type != "target") ,  x = ~year, y = ~value,
+        add_trace(data = graph_data_actual,  x = ~year, y = ~value,
                   name = 'Actual', type = 'scatter', mode = 'lines+markers',
                   line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 4, dash = 'solid'),
                   marker = list(color = ind_vals_output$theme_colour, size = 8),
+                  text=paste(date_label, graph_data_actual$value, sep=', '),
+                  hoverinfo='text',
                   error_y = list(type = "data", symmetric = FALSE, array = ~err_high, arrayminus = ~err_low)) %>%
         layout(xaxis = list(title = 'Year'),
                yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}))
