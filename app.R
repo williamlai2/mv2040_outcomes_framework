@@ -185,85 +185,102 @@ header <- dashboardHeader(
             class = "dropdown")
 )
 
+sidebar <- dashboardSidebar(
+    sidebarMenu(
+        menuItem("Graphs", tabName = "graphs"),
+        menuItem("Summary", tabName = "summary")
+    )
+)
+
 body <- dashboardBody(
     #supress error messages
     tags$style(type="text/css",
                ".shiny-output-error { visibility: hidden; }",
                ".shiny-output-error:before { visibility: hidden; }"
     ),
-    #select
-    fluidRow(
-        box(
-            selectInput(inputId = "selected_theme",
-                        label = "Select a theme",
-                        choices = theme_list),
-        ),
-        box(
-            uiOutput("measure_output")           
+    tabItems(
+        # First tab content
+        tabItem(tabName = "graphs",
+                #select
+                fluidRow(
+                    box(
+                        selectInput(inputId = "selected_theme",
+                                    label = "Select a theme",
+                                    choices = theme_list),
+                    ),
+                    box(
+                        uiOutput("measure_output")           
+                    )
+                ),
+                
+                # infoBoxes dynamic colours based on function in server
+                fluidRow(
+                    infoBoxOutput("ibox_theme"),
+                    infoBoxOutput("ibox_sd"),
+                    infoBoxOutput("ibox_cat")
+                ),
+                
+                # the graph
+                fluidRow(plotlyOutput("measure_graph"),
+                ),
+                
+                # info about the graph
+                fluidRow(
+                    box(
+                        title = "Measure",
+                        width = 4,
+                        background = "black",
+                        textOutput('title')
+                    ),
+                    box(
+                        title = "Source",
+                        width = 4,
+                        background = "black",
+                        textOutput('source')
+                    ),
+                    
+                    box(
+                        title = "Definition",
+                        width = 4,
+                        background = "black",
+                        textOutput('definition')
+                    )
+                ),
+                
+                #about progress towards desired change
+                fluidRow(
+                    infoBoxOutput("ibox_desired"),
+                    infoBoxOutput("ibox_progress")
+                ),
+                
+                #commentary and rationale below the graph
+                fluidRow(
+                    box(
+                        title = "Commentary",
+                        width = 6,
+                        textOutput('commentary')
+                    ),
+                    box(
+                        title = "Rationale",
+                        width = 6,
+                        textOutput('rationale')
+                    )
+                ),
+                
+                #my comments
+                fluidRow(
+                    box(
+                        title = "Notes:",
+                        "Wait until the graph has loaded!!! Work in progress!"
+                    )
+                )
         )
     ),
-    
-    # infoBoxes dynamic colours based on function in server
-    fluidRow(
-        infoBoxOutput("ibox_theme"),
-        infoBoxOutput("ibox_sd"),
-        infoBoxOutput("ibox_cat")
-    ),
-    
-    # the graph
-    fluidRow(plotlyOutput("measure_graph"),
-    ),
-    
-    # info about the graph
-    fluidRow(
-        box(
-            title = "Measure",
-            width = 4,
-            background = "black",
-            textOutput('title')
-        ),
-        box(
-            title = "Source",
-            width = 4,
-            background = "black",
-            textOutput('source')
-        ),
-        
-        box(
-            title = "Definition",
-            width = 4,
-            background = "black",
-            textOutput('definition')
-        )
-    ),
-    
-    #about progress towards desired change
-    fluidRow(
-        infoBoxOutput("ibox_desired"),
-        infoBoxOutput("ibox_progress")
-    ),
-    
-    #commentary and rationale below the graph
-    fluidRow(
-        box(
-            title = "Commentary",
-            width = 6,
-            textOutput('commentary')
-        ),
-        box(
-            title = "Rationale",
-            width = 6,
-            textOutput('rationale')
-        )
-    ),
-    
-    #my comments
-    fluidRow(
-        box(
-            title = "Notes:",
-            "Wait until the graph has loaded!!! Work in progress!"
-        )
-    )
+    # Second tab content
+    tabItem(tabName = "summary",
+            numericInput("maxrows", "Rows to show", 25),
+            verbatimTextOutput("rawtable")
+                )
 )
 
 
@@ -444,7 +461,7 @@ server <- function(input, output) {
 
 # for the app
 ui <- dashboardPage(header,
-                    dashboardSidebar(disable = TRUE),
+                    sidebar,
                     body)
 
 shinyApp(ui, server)
