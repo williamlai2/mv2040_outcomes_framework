@@ -202,7 +202,8 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
     sidebarMenu(
         menuItem("Graphs", tabName = "graphs"),
-        menuItem("Summary", tabName = "summary")
+        menuItem("Summary", tabName = "summary"),
+        menuItem("Notes", tabName = "notes")
     )
 )
 
@@ -253,11 +254,6 @@ body <- dashboardBody(
                     box(title = "Commentary", width = 6, textOutput('commentary')),
                     box(title = "Rationale", width = 6, textOutput('rationale'))
                 ),
-                
-                #my comments
-                fluidRow(
-                    box(title = "Notes:", "Wait until the graph has loaded!!! Work in progress!")
-                )
         ),
         # Second tab content
         tabItem(tabName = "summary",
@@ -298,6 +294,12 @@ body <- dashboardBody(
                     infoBox(title = "Bad", value = progress_by_theme %>% filter(theme == "Beautiful", change == "Bad") %>% select(n) %>% pull(), icon = shiny::icon("times-circle"), color = "maroon", width = 2),
                     infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Beautiful") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 2)
                 ),
+        ),
+        #third tab
+        tabItem(tabName = "notes",
+                fluidRow(
+                    box(title = "Notes:", "Work in progress!")
+                )
         )
     )
 )
@@ -476,7 +478,6 @@ server <- function(input, output) {
     })
     
 }
-
 
 # for the app
 ui <- dashboardPage(header,
