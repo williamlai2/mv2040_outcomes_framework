@@ -81,11 +81,11 @@ progress_by_theme <- change_progress_data_full %>%
   count(change) %>% 
   ungroup() 
 
-theme_pct_good <- progress_by_theme %>% 
+theme_pct <- progress_by_theme %>% 
   pivot_wider(names_from = "change", values_from = "n") %>% 
   clean_names() %>% 
   mutate(total = good + n_a + bad) %>% 
-  mutate(pct_good = good/total)
+  mutate(pct_good = good/total, pct_na = n_a/total, pct_bad = bad/total)
 
 percent(theme_pct_good %>% filter(theme == "Fair") %>% select(pct_good) %>% pull(), accuracy = 1L)
 progress_by_theme %>% filter(change == "Good") %>% select(n) %>% pull()
