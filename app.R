@@ -202,7 +202,7 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
     width = 100,
     sidebarMenu(
-        menuItem("Graphs", tabName = "graphs"),
+        menuItem("Measures", tabName = "measures"),
         menuItem("Summary", tabName = "summary"),
         menuItem("Notes", tabName = "notes")
     )
@@ -216,7 +216,7 @@ body <- dashboardBody(
     ),
     tabItems(
         # First tab content
-        tabItem(tabName = "graphs",
+        tabItem(tabName = "measures",
                 #select
                 fluidRow(
                     box(selectInput(inputId = "selected_theme",
