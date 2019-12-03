@@ -7,7 +7,6 @@ library(janitor)
 library(plotly)
 library(scales)
 library(shinydashboard)
-library(lubridate)
 
 #disable scientific notation
 options(scipen = 999)
@@ -43,11 +42,13 @@ change_progress_data_full <- data_raw %>%
   pivot_wider(names_from = type, values_from = value) %>% 
   left_join(indicator_list, by = "id") %>% 
   select(id, baseline, progress, desired) %>% 
+  ungroup() %>% 
   mutate(change = case_when(desired == "Increase" & progress > baseline ~ "Good",
                             desired == "Increase" & progress < baseline ~ "Bad",
                             desired == "Decrease" & progress < baseline ~ "Good",
                             desired == "Decrease" & progress > baseline ~ "Bad",
-                            TRUE ~ "N/A"))
+                            TRUE ~ "N/A")) 
+
 
 ## colours for themes
 colour_table <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
@@ -67,9 +68,24 @@ measure_list <- indicator_list %>%
   select(measure) %>% 
   pull()
 
+
+###############################
+
 #test
-data_raw %>% 
-  filter(type == "baseline") %>% 
-  mutate(year = year(year)) %>% 
-  select(year) %>% 
-  pull()
+progress_by_theme <- change_progress_data_full %>% 
+  left_join(indicator_list, by = "id") %>% 
+  select(id, baseline, progress, desired = desired.x, change, theme) %>% 
+  mutate(theme = factor(theme, levels = c("Fair", "Thriving", "Connected", "Green", "Beautiful"))) %>% 
+  mutate(change = factor(change, levels = c("Good", "N/A", "Bad"))) %>% 
+  group_by(theme, .drop=FALSE) %>% 
+  count(change) %>% 
+  ungroup() 
+
+theme_pct_good <- progress_by_theme %>% 
+  pivot_wider(names_from = "change", values_from = "n") %>% 
+  clean_names() %>% 
+  mutate(total = good + n_a + bad) %>% 
+  mutate(pct_good = good/total)
+
+percent(theme_pct_good %>% filter(theme == "Fair") %>% select(pct_good) %>% pull(), accuracy = 1L)
+progress_by_theme %>% filter(change == "Good") %>% select(n) %>% pull()
