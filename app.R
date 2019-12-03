@@ -277,7 +277,7 @@ body <- dashboardBody(
         ),
         # Second tab content
         tabItem(tabName = "summary",
-                h4("something summarising the statuses by theme")
+                h4("something summarising the progress towards the targets by theme")
         )
     )
 )
