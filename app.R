@@ -173,13 +173,13 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
         # a trace with all the data, dashed
         add_trace(data = graph_data,  x = ~year, y = ~value,
                   name = 'Target', type = 'scatter', mode = 'lines+markers',
-                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 2, dash = 'dash'),
-                  marker = list(color = "aqua", size = 8)) %>% 
+                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 3, dash = 'dash'),
+                  marker = list(color = "aqua", size = 9)) %>% 
         # a trace that overwrites the actual
         add_trace(data = graph_data_actual,  x = ~year, y = ~value,
                   name = 'Actual', type = 'scatter', mode = 'lines+markers',
-                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 4, dash = 'solid'),
-                  marker = list(color = ind_vals_output$theme_colour, size = 8),
+                  line = list(shape = 'linear', color = ind_vals_output$theme_colour, width= 5, dash = 'solid'),
+                  marker = list(color = ind_vals_output$theme_colour, size = 9),
                   text=paste(date_label, graph_data_actual$value, sep=', '),
                   hoverinfo='text',
                   error_y = list(type = "data", symmetric = FALSE, array = ~err_high, arrayminus = ~err_low)) %>%
@@ -200,6 +200,7 @@ header <- dashboardHeader(
 )
 
 sidebar <- dashboardSidebar(
+    width = 100,
     sidebarMenu(
         menuItem("Graphs", tabName = "graphs"),
         menuItem("Summary", tabName = "summary"),
@@ -260,39 +261,49 @@ body <- dashboardBody(
                 h4("something summarising the progress towards the targets by theme"),
                 br(),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Fair", color = "red", width = 3),
-                    infoBox(title = "Good", value = progress_by_theme %>% filter(theme == "Fair", change == "Good") %>% select(n) %>% pull(), icon = shiny::icon("check-circle"), color = "aqua", width = 2),
-                    infoBox(title = "N/A", value = progress_by_theme %>% filter(theme == "Fair", change == "N/A") %>% select(n) %>% pull(), icon = shiny::icon("arrows-h"), color = "orange", width = 2),
-                    infoBox(title = "Bad", value = progress_by_theme %>% filter(theme == "Fair", change == "Bad") %>% select(n) %>% pull(), icon = shiny::icon("times-circle"), color = "maroon", width = 2),
-                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Fair") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 2)
+                    infoBox(title = "Theme", value = "Fair", color = "red", width = 4),
+                    box(title = "Progress",
+                        glue("Good: {value = progress_by_theme %>% filter(theme == 'Fair', change =='Good') %>% select(n) %>% pull()};    "),
+                        glue("N/A: {value = progress_by_theme %>% filter(theme == 'Fair', change =='N/A') %>% select(n) %>% pull()};    "),
+                        glue("Poor: {value = progress_by_theme %>% filter(theme == 'Fair', change =='Bad') %>% select(n) %>% pull()}"),
+                        width = 4),
+                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Fair") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 4)
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Thriving", color = "blue", width = 3),
-                    infoBox(title = "Good", value = progress_by_theme %>% filter(theme == "Thriving", change == "Good") %>% select(n) %>% pull(), icon = shiny::icon("check-circle"), color = "aqua", width = 2),
-                    infoBox(title = "N/A", value = progress_by_theme %>% filter(theme == "Thriving", change == "N/A") %>% select(n) %>% pull(), icon = shiny::icon("arrows-h"), color = "orange", width = 2),
-                    infoBox(title = "Bad", value = progress_by_theme %>% filter(theme == "Thriving", change == "Bad") %>% select(n) %>% pull(), icon = shiny::icon("times-circle"), color = "maroon", width = 2),
-                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Thriving") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 2)
+                    infoBox(title = "Theme", value = "Thriving", color = "blue", width = 4),
+                    box(title = "Progress",
+                        glue("Good: {value = progress_by_theme %>% filter(theme == 'Thriving', change =='Good') %>% select(n) %>% pull()};    "),
+                        glue("N/A: {value = progress_by_theme %>% filter(theme == 'Thriving', change =='N/A') %>% select(n) %>% pull()};    "),
+                        glue("Poor: {value = progress_by_theme %>% filter(theme == 'Thriving', change =='Bad') %>% select(n) %>% pull()}"),
+                        width = 4),
+                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Thriving") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 4)
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Connected", color = "purple", width = 3),
-                    infoBox(title = "Good", value = progress_by_theme %>% filter(theme == "Connected", change == "Good") %>% select(n) %>% pull(), icon = shiny::icon("check-circle"), color = "aqua", width = 2),
-                    infoBox(title = "N/A", value = progress_by_theme %>% filter(theme == "Connected", change == "N/A") %>% select(n) %>% pull(), icon = shiny::icon("arrows-h"), color = "orange", width = 2),
-                    infoBox(title = "Bad", value = progress_by_theme %>% filter(theme == "Connected", change == "Bad") %>% select(n) %>% pull(), icon = shiny::icon("times-circle"), color = "maroon", width = 2),
-                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Connected") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 2)
+                    infoBox(title = "Theme", value = "Connected", color = "purple", width = 4),
+                    box(title = "Progress",
+                        glue("Good: {value = progress_by_theme %>% filter(theme == 'Connected', change =='Good') %>% select(n) %>% pull()};    "),
+                        glue("N/A: {value = progress_by_theme %>% filter(theme == 'Connected', change =='N/A') %>% select(n) %>% pull()};    "),
+                        glue("Poor: {value = progress_by_theme %>% filter(theme == 'Connected', change =='Bad') %>% select(n) %>% pull()}"),
+                        width = 4),
+                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Connected") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 4)
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Green", color = "green", width = 3),
-                    infoBox(title = "Good", value = progress_by_theme %>% filter(theme == "Green", change == "Good") %>% select(n) %>% pull(), icon = shiny::icon("check-circle"), color = "aqua", width = 2),
-                    infoBox(title = "N/A", value = progress_by_theme %>% filter(theme == "Green", change == "N/A") %>% select(n) %>% pull(), icon = shiny::icon("arrows-h"), color = "orange", width = 2),
-                    infoBox(title = "Bad", value = progress_by_theme %>% filter(theme == "Green", change == "Bad") %>% select(n) %>% pull(), icon = shiny::icon("times-circle"), color = "maroon", width = 2),
-                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Green") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 2)
+                    infoBox(title = "Theme", value = "Green", color = "green", width = 4),
+                    box(title = "Progress",
+                        glue("Good: {value = progress_by_theme %>% filter(theme == 'Green', change =='Good') %>% select(n) %>% pull()};    "),
+                        glue("N/A: {value = progress_by_theme %>% filter(theme == 'Green', change =='N/A') %>% select(n) %>% pull()};    "),
+                        glue("Poor: {value = progress_by_theme %>% filter(theme == 'Green', change =='Bad') %>% select(n) %>% pull()}"),
+                        width = 4),
+                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Green") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 4)
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 3),
-                    infoBox(title = "Good", value = progress_by_theme %>% filter(theme == "Beautiful", change == "Good") %>% select(n) %>% pull(), icon = shiny::icon("check-circle"), color = "aqua", width = 2),
-                    infoBox(title = "N/A", value = progress_by_theme %>% filter(theme == "Beautiful", change == "N/A") %>% select(n) %>% pull(), icon = shiny::icon("arrows-h"), color = "orange", width = 2),
-                    infoBox(title = "Bad", value = progress_by_theme %>% filter(theme == "Beautiful", change == "Bad") %>% select(n) %>% pull(), icon = shiny::icon("times-circle"), color = "maroon", width = 2),
-                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Beautiful") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 2)
+                    infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 4),
+                    box(title = "Progress",
+                        glue("Good: {value = progress_by_theme %>% filter(theme == 'Beautiful', change =='Good') %>% select(n) %>% pull()};    "),
+                        glue("N/A: {value = progress_by_theme %>% filter(theme == 'Beautiful', change =='N/A') %>% select(n) %>% pull()};    "),
+                        glue("Poor: {value = progress_by_theme %>% filter(theme == 'Beautiful', change =='Bad') %>% select(n) %>% pull()}"),
+                        width = 4),
+                    infoBox(title = "% Good", value = percent(theme_pct_good %>% filter(theme == "Beautiful") %>% select(pct_good) %>% pull(), accuracy = 1L), icon = shiny::icon("check-circle"), color = "lime", width = 4)
                 ),
         ),
         #third tab
