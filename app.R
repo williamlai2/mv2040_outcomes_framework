@@ -274,13 +274,12 @@ body <- dashboardBody(
                         "Wait until the graph has loaded!!! Work in progress!"
                     )
                 )
+        ),
+        # Second tab content
+        tabItem(tabName = "summary",
+                h4("something summarising the statuses by theme")
         )
-    ),
-    # Second tab content
-    tabItem(tabName = "summary",
-            numericInput("maxrows", "Rows to show", 25),
-            verbatimTextOutput("rawtable")
-                )
+    )
 )
 
 
