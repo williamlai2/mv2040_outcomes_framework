@@ -258,7 +258,7 @@ body <- dashboardBody(
         ),
         # Second tab content
         tabItem(tabName = "summary",
-                h2("Summary of progress towards the targets by theme"),
+                h2("Summary of progress towards the 2040 targets by theme"),
                 br(),
                 fluidRow(
                     infoBox(title = "Theme", value = "Fair", color = "red", width = 3),
