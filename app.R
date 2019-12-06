@@ -307,6 +307,9 @@ body <- dashboardBody(
                     valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
                              icon = shiny::icon("times-circle"), color = "maroon", width = 3),
                 ),
+                fluidRow(
+                    box(title = "Notes", "Figures are rounded and may not add up to 100 per cent")
+                ),
         ),
         #third tab
         tabItem(tabName = "notes",
