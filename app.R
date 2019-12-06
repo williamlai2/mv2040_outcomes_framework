@@ -7,6 +7,7 @@ library(janitor)
 library(plotly)
 library(scales)
 library(shinydashboard)
+library(shinycssloaders)
 
 #disable scientific notation
 options(scipen = 999)
@@ -234,7 +235,8 @@ body <- dashboardBody(
                 ),
                 
                 # the graph
-                fluidRow(plotlyOutput("measure_graph"),
+                fluidRow(plotlyOutput("measure_graph") %>% 
+                             withSpinner(color="#31788F"),
                 ),
                 
                 # info about the graph

@@ -7,6 +7,7 @@ library(janitor)
 library(plotly)
 library(scales)
 library(shinydashboard)
+library(shinycssloaders)
 
 #disable scientific notation
 options(scipen = 999)
