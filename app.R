@@ -236,7 +236,7 @@ body <- dashboardBody(
                 
                 # the graph
                 fluidRow(plotlyOutput("measure_graph") %>% 
-                             withSpinner(color="#31788F"),
+                             withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 ),
                 
                 # info about the graph
