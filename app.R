@@ -8,6 +8,7 @@ library(plotly)
 library(scales)
 library(shinydashboard)
 library(shinycssloaders)
+library(apputils)
 
 #disable scientific notation
 options(scipen = 999)
@@ -263,7 +264,7 @@ body <- dashboardBody(
                 h2("Summary of progress towards the 2040 targets by theme"),
                 br(),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Fair", color = "red", width = 3),
+                    infoBox(title = "Theme", value = "Fair", color = "red", width = 3, icon=icon(list(src = "fair.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
                              icon = shiny::icon("check-circle"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
@@ -272,7 +273,7 @@ body <- dashboardBody(
                              icon = shiny::icon("times-circle"), color = "maroon", width = 3),
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Thriving", color = "blue", width = 3),
+                    infoBox(title = "Theme", value = "Thriving", color = "blue", width = 3, icon=icon(list(src = "thriving.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
                              icon = shiny::icon("check-circle"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
@@ -281,7 +282,7 @@ body <- dashboardBody(
                              icon = shiny::icon("times-circle"), color = "maroon", width = 3),
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Connected", color = "purple", width = 3),
+                    infoBox(title = "Theme", value = "Connected", color = "purple", width = 3, icon=icon(list(src = "connected.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
                              icon = shiny::icon("check-circle"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
@@ -290,7 +291,7 @@ body <- dashboardBody(
                              icon = shiny::icon("times-circle"), color = "maroon", width = 3),
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Green", color = "green", width = 3),
+                    infoBox(title = "Theme", value = "Green", color = "green", width = 3, icon=icon(list(src = "green.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
                              icon = shiny::icon("check-circle"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
@@ -299,7 +300,7 @@ body <- dashboardBody(
                              icon = shiny::icon("times-circle"), color = "maroon", width = 3),
                 ),
                 fluidRow(
-                    infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 3),
+                    infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 3, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
                              icon = shiny::icon("check-circle"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
@@ -401,22 +402,27 @@ server <- function(input, output) {
     output$ibox_theme <- renderInfoBox({
         if (input$selected_theme  == "Fair")
         {
-            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "red",  fill = TRUE)
+            ic <- apputils::icon(list(src = "fair.png", width = "80px"), lib = "local")
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "red", icon = ic)
         }
         else if (input$selected_theme  == "Thriving")
         {
-            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "blue",  fill = TRUE)
+            ic <- apputils::icon(list(src = "thriving.png", width = "80px"), lib = "local")
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "blue", icon = ic)
         }
         else if (input$selected_theme  == "Connected")
         {
-            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "purple",  fill = TRUE)
+            ic <- apputils::icon(list(src = "connected.png", width = "80px"), lib = "local")
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "purple", icon = ic)
         }
         else if (input$selected_theme  == "Green")
         {
-            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "green",  fill = TRUE)
+            ic <- apputils::icon(list(src = "green.png", width = "80px"), lib = "local")
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "green", icon = ic)
         }
         else {
-            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "yellow",  fill = TRUE)
+            ic <- apputils::icon(list(src = "beautiful.png", width = "80px"), lib = "local")
+            infoBox(title = "Theme", textOutput('theme'), width = 4, color = "yellow", icon = ic)
         }
     })
     
@@ -425,22 +431,22 @@ server <- function(input, output) {
     output$ibox_sd <- renderInfoBox({
         if (input$selected_theme  == "Fair")
         {
-            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "red",  fill = TRUE)
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "red", icon = icon("map-signs"))
         }
         else if (input$selected_theme  == "Thriving")
         {
-            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "blue",  fill = TRUE)
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "blue", icon = icon("map-signs"))
         }
         else if (input$selected_theme  == "Connected")
         {
-            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "purple",  fill = TRUE)
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "purple", icon = icon("map-signs"))
         }
         else if (input$selected_theme  == "Green")
         {
-            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "green",  fill = TRUE)
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "green", icon = icon("map-signs"))
         }
         else {
-            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "yellow",  fill = TRUE)
+            infoBox(title = "Strategic Direction", textOutput('strategic_direction'), width = 4, color = "yellow", icon = icon("map-signs"))
         }
     })
     
@@ -448,22 +454,22 @@ server <- function(input, output) {
     output$ibox_cat <- renderInfoBox({
         if (input$selected_theme  == "Fair")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "red",  fill = TRUE)
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "red", icon = icon("layer-group"))
         }
         else if (input$selected_theme  == "Thriving")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "blue",  fill = TRUE)
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "blue", icon = icon("layer-group"))
         }
         else if (input$selected_theme  == "Connected")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "purple",  fill = TRUE)
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "purple", icon = icon("layer-group"))
         }
         else if (input$selected_theme  == "Green")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "green",  fill = TRUE)
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "green", icon = icon("layer-group"))
         }
         else {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "yellow",  fill = TRUE)
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "yellow", icon = icon("layer-group"))
         }
     })
     
