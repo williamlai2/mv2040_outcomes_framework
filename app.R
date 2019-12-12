@@ -266,47 +266,47 @@ body <- dashboardBody(
                 fluidRow(
                     infoBox(title = "Theme", value = "Fair", color = "red", width = 3, icon=icon(list(src = "fair.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
-                             icon = shiny::icon("check-circle"), color = "aqua", width = 3),
+                             icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
-                             icon = shiny::icon("arrows-h"), color = "orange", width = 3),
+                             icon = shiny::icon("meh"), color = "orange", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
-                             icon = shiny::icon("times-circle"), color = "maroon", width = 3),
+                             icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Thriving", color = "blue", width = 3, icon=icon(list(src = "thriving.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
-                             icon = shiny::icon("check-circle"), color = "aqua", width = 3),
+                             icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
-                             icon = shiny::icon("arrows-h"), color = "orange", width = 3),
+                             icon = shiny::icon("meh"), color = "orange", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
-                             icon = shiny::icon("times-circle"), color = "maroon", width = 3),
+                             icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Connected", color = "purple", width = 3, icon=icon(list(src = "connected.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
-                             icon = shiny::icon("check-circle"), color = "aqua", width = 3),
+                             icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
-                             icon = shiny::icon("arrows-h"), color = "orange", width = 3),
+                             icon = shiny::icon("meh"), color = "orange", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
-                             icon = shiny::icon("times-circle"), color = "maroon", width = 3),
+                             icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Green", color = "green", width = 3, icon=icon(list(src = "green.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
-                             icon = shiny::icon("check-circle"), color = "aqua", width = 3),
+                             icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
-                             icon = shiny::icon("arrows-h"), color = "orange", width = 3),
+                             icon = shiny::icon("meh"), color = "orange", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
-                             icon = shiny::icon("times-circle"), color = "maroon", width = 3),
+                             icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 3, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
-                             icon = shiny::icon("check-circle"), color = "aqua", width = 3),
+                             icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
-                             icon = shiny::icon("arrows-h"), color = "orange", width = 3),
+                             icon = shiny::icon("meh"), color = "orange", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
-                             icon = shiny::icon("times-circle"), color = "maroon", width = 3),
+                             icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     box(title = "Notes", "Figures are rounded and may not add up to 100 per cent")
@@ -454,22 +454,22 @@ server <- function(input, output) {
     output$ibox_cat <- renderInfoBox({
         if (input$selected_theme  == "Fair")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "red", icon = icon("layer-group"))
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "red", icon = icon("chart-bar"))
         }
         else if (input$selected_theme  == "Thriving")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "blue", icon = icon("layer-group"))
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "blue", icon = icon("chart-bar"))
         }
         else if (input$selected_theme  == "Connected")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "purple", icon = icon("layer-group"))
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "purple", icon = icon("chart-bar"))
         }
         else if (input$selected_theme  == "Green")
         {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "green", icon = icon("layer-group"))
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "green", icon = icon("chart-bar"))
         }
         else {
-            infoBox(title = "Category", textOutput('category'), width = 4, color = "yellow", icon = icon("layer-group"))
+            infoBox(title = "Category", textOutput('category'), width = 4, color = "yellow", icon = icon("chart-bar"))
         }
     })
     
@@ -488,14 +488,14 @@ server <- function(input, output) {
     output$ibox_progress <- renderInfoBox({
         if (get_vals()$change_progress  == "Good")
         {
-            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("check-circle"), color = "aqua")
+            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("smile"), color = "aqua")
         }
         else if (get_vals()$change_progress  == "Bad")
         {
-            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("times-circle"), color = "maroon")
+            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("frown"), color = "maroon")
         }
         else {
-            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("arrows-h"), color = "orange")
+            infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("meh"), color = "orange")
         }
     })
     
