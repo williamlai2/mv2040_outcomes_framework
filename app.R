@@ -212,6 +212,11 @@ body <- dashboardBody(
                ".shiny-output-error { visibility: hidden; }",
                ".shiny-output-error:before { visibility: hidden; }"
     ),
+    #override red with 'fair' red
+    tags$style(
+        type = 'text/css', 
+        '.bg-red {background-color: #E55048!important; }'
+    ),
     #override blue with 'thriving' blue
     tags$style(
         type = 'text/css', 
@@ -221,6 +226,16 @@ body <- dashboardBody(
     tags$style(
         type = 'text/css', 
         '.bg-purple {background-color: #6A4479!important; }'
+    ),
+    #override green with 'green' green
+    tags$style(
+        type = 'text/css', 
+        '.bg-green {background-color: #4EA546!important; }'
+    ),
+    #override yellow with 'beautiful' yellow
+    tags$style(
+        type = 'text/css', 
+        '.bg-yellow {background-color: #E3A51E!important; }'
     ),
     tabItems(
         # First tab content
