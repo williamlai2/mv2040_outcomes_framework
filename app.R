@@ -70,10 +70,6 @@ theme_pct <- progress_by_theme %>%
 colour_table <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
                        col_code = c("#E55048", "#31788F", "#6A4479", "#4EA546", "#E3A51E"))
 
-## colours for shinydashboard boxes
-colour_boxes <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
-                       col_code = c("red", "blue", "violet", "green", "yellow"))
-
 # the theme list
 theme_list <- indicator_list %>% 
     distinct(theme) %>% 
@@ -215,6 +211,16 @@ body <- dashboardBody(
     tags$style(type="text/css",
                ".shiny-output-error { visibility: hidden; }",
                ".shiny-output-error:before { visibility: hidden; }"
+    ),
+    #override blue with 'thriving' blue
+    tags$style(
+        type = 'text/css', 
+        '.bg-blue {background-color: #31788F!important; }'
+    ),
+    #override purple with 'connected' purple
+    tags$style(
+        type = 'text/css', 
+        '.bg-purple {background-color: #6A4479!important; }'
     ),
     tabItems(
         # First tab content
