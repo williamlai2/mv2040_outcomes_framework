@@ -198,10 +198,17 @@ header <- dashboardHeader(
 )
 
 sidebar <- dashboardSidebar(
-    width = 100,
+    width = 200,
     sidebarMenu(
-        menuItem("Measures", tabName = "measures"),
-        menuItem("Summary", tabName = "summary"),
+        menuItem("Individual Measures", tabName = "measures"),
+        menuItem("Summary",
+                 menuSubItem("Progress towards targets", tabName = "progress"),
+                 menuSubItem("Fair", tabName = "summary_fair"),
+                 menuSubItem("Thriving", tabName = "summary_thriving"),
+                 menuSubItem("Connected", tabName = "summary_connected"),
+                 menuSubItem("Green", tabName = "summary_green"),
+                 menuSubItem("Beautiful", tabName = "summary_beautiful")
+        ),
         menuItem("Notes", tabName = "notes")
     )
 )
@@ -282,7 +289,7 @@ body <- dashboardBody(
                 ),
         ),
         # Second tab content
-        tabItem(tabName = "summary",
+        tabItem(tabName = "progress",
                 h2("Summary of progress towards the 2040 targets by theme"),
                 br(),
                 fluidRow(
@@ -334,6 +341,47 @@ body <- dashboardBody(
                     box(title = "Notes", "Figures are rounded and may not add up to 100 per cent")
                 ),
         ),
+        
+        #theme tabs - fair
+        tabItem(tabName = "summary_fair",
+                fluidRow(
+                    infoBox(title = "Theme", value = "Fair", color = "red", width = 12, icon=icon(list(src = "fair.png", width="80px"), lib="local")),
+                    box(title = "Notes:", "Fair data to come")
+                )
+        ),
+        
+        #theme tabs - thriving
+        tabItem(tabName = "summary_thriving",
+                fluidRow(
+                    infoBox(title = "Theme", value = "Thriving", color = "blue", width = 12, icon=icon(list(src = "thriving.png", width="80px"), lib="local")),
+                    box(title = "Notes:", "Thriving data to come")
+                )
+        ),
+        
+        #theme tabs - connected
+        tabItem(tabName = "summary_connected",
+                fluidRow(
+                    infoBox(title = "Theme", value = "Connected", color = "purple", width = 12, icon=icon(list(src = "connected.png", width="80px"), lib="local")),
+                    box(title = "Notes:", "Connected data to come")
+                )
+        ),
+        
+        #theme tabs - green
+        tabItem(tabName = "summary_green",
+                fluidRow(
+                    infoBox(title = "Theme", value = "Green", color = "green", width = 12, icon=icon(list(src = "green.png", width="80px"), lib="local")),
+                    box(title = "Notes:", "Green data to be added")
+                )
+        ),
+        
+        #theme tabs - beautiful
+        tabItem(tabName = "summary_beautiful",
+                fluidRow(
+                    infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 3, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
+                    box(title = "Notes:", "Work in progress!")
+                )
+        ),
+        
         #third tab
         tabItem(tabName = "notes",
                 fluidRow(
