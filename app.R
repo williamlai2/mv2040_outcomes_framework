@@ -104,6 +104,12 @@ towards_connected <- towards_target %>% filter(theme == "Connected")
 towards_green <- towards_target %>% filter(theme == "Green")
 towards_beautiful <- towards_target %>% filter(theme == "Beautiful")
 
+# text for box in individual themes
+ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
+                                 "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.</br>",
+                                 "</br>Progress towards the target is calculated as <b>(the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100</b>. This is rounded to one decimal place.</br>",
+                                 "</br>For full information about the measures, see the <b>'Individual measures'</b> tab."))
+
 
 # functions _________________________________________________________________________________________________________
 # function to get values for each indicator - returns a list
@@ -247,7 +253,7 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(
     width = 200,
     sidebarMenu(
-        menuItem("Individual Measures", tabName = "measures"),
+        menuItem("Individual measures", tabName = "measures"),
         menuItem("Summary",
                  menuSubItem("Progress towards targets", tabName = "progress"),
                  menuSubItem("Fair", tabName = "summary_fair"),
@@ -394,10 +400,7 @@ body <- dashboardBody(
         tabItem(tabName = "summary_fair",
                 fluidRow(
                     infoBox(title = "Theme", value = "Fair", color = "red", width = 12, icon=icon(list(src = "fair.png", width="80px"), lib="local")),
-                    box(title = "Notes:",
-                    "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
-                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
-                    width = 12)
+                    box(ind_theme_text, width = 12)
                 ),
                 fluidRow(
                     plotlyOutput("towards_fair_graph") %>% 
@@ -409,10 +412,7 @@ body <- dashboardBody(
         tabItem(tabName = "summary_thriving",
                 fluidRow(
                     infoBox(title = "Theme", value = "Thriving", color = "blue", width = 12, icon=icon(list(src = "thriving.png", width="80px"), lib="local")),
-                    box(title = "Notes:",
-                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
-                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
-                        width = 12)
+                    box(ind_theme_text, width = 12)
                 ),
                 fluidRow(
                     plotlyOutput("towards_thriving_graph") %>% 
@@ -424,10 +424,7 @@ body <- dashboardBody(
         tabItem(tabName = "summary_connected",
                 fluidRow(
                     infoBox(title = "Theme", value = "Connected", color = "purple", width = 12, icon=icon(list(src = "connected.png", width="80px"), lib="local")),
-                    box(title = "Notes:",
-                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
-                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
-                        width = 12)
+                    box(ind_theme_text, width = 12)
                 ),
                 fluidRow(
                     plotlyOutput("towards_connected_graph") %>% 
@@ -439,10 +436,7 @@ body <- dashboardBody(
         tabItem(tabName = "summary_green",
                 fluidRow(
                     infoBox(title = "Theme", value = "Green", color = "green", width = 12, icon=icon(list(src = "green.png", width="80px"), lib="local")),
-                    box(title = "Notes:",
-                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
-                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
-                        width = 12)
+                    box(ind_theme_text, width = 12)
                 ),
                 fluidRow(
                     plotlyOutput("towards_green_graph") %>% 
@@ -454,10 +448,7 @@ body <- dashboardBody(
         tabItem(tabName = "summary_beautiful",
                 fluidRow(
                     infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 12, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
-                    box(title = "Notes:",
-                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
-                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
-                        width = 12)
+                    box(ind_theme_text, width = 12)
                 ),
                 fluidRow(
                     plotlyOutput("towards_beautiful_graph") %>% 
