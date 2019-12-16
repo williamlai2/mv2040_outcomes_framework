@@ -395,7 +395,8 @@ body <- dashboardBody(
                     width = 12)
                 ),
                 fluidRow(
-                    plotlyOutput("towards_fair_graph")
+                    plotlyOutput("towards_fair_graph") %>% 
+                        withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 )
         ),
         
@@ -409,7 +410,8 @@ body <- dashboardBody(
                         width = 12)
                 ),
                 fluidRow(
-                    plotlyOutput("towards_thriving_graph")
+                    plotlyOutput("towards_thriving_graph") %>% 
+                        withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 )
         ),
         
@@ -423,7 +425,8 @@ body <- dashboardBody(
                         width = 12)
                 ),
                 fluidRow(
-                    plotlyOutput("towards_connected_graph")
+                    plotlyOutput("towards_connected_graph") %>% 
+                        withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 )
         ),
         
@@ -437,7 +440,8 @@ body <- dashboardBody(
                         width = 12)
                 ),
                 fluidRow(
-                    plotlyOutput("towards_green_graph")
+                    plotlyOutput("towards_green_graph") %>% 
+                        withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 )
         ),
         
@@ -451,7 +455,8 @@ body <- dashboardBody(
                         width = 12)
                 ),
                 fluidRow(
-                    plotlyOutput("towards_beautiful_graph")
+                    plotlyOutput("towards_beautiful_graph") %>% 
+                        withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 )
         ),
         
