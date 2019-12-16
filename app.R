@@ -377,7 +377,7 @@ body <- dashboardBody(
         #theme tabs - beautiful
         tabItem(tabName = "summary_beautiful",
                 fluidRow(
-                    infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 3, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
+                    infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 12, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
                     box(title = "Notes:", "Work in progress!")
                 )
         ),
