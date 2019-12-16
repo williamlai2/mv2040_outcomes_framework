@@ -80,6 +80,31 @@ measure_list <- indicator_list %>%
     select(measure) %>% 
     pull()
 
+# progress towards the targets
+towards_target <- data_raw %>% 
+    filter(type != "prior")  %>% 
+    select(id, year, value, type) %>% 
+    arrange(desc(year)) %>% 
+    group_by(id, type)  %>% 
+    slice(1) %>% #takes baseline and latest progress figure
+    select(-year) %>% 
+    pivot_wider(names_from = type, values_from = value) %>% 
+    left_join(indicator_list, by = "id") %>% 
+    select(id, baseline, progress, target, desired, theme) %>% 
+    mutate(toward_pct = (progress - baseline)/(target - baseline) * 100) %>% # progress as a percentage towards the target from baseline
+    mutate(theme = factor(theme, levels = c("Fair", "Thriving", "Connected", "Green", "Beautiful"))) %>% 
+    left_join(indicator_list, by = "id") %>% 
+    select(id, baseline, progress, target, theme = theme.x, desired = desired.x, toward_pct, measure) %>% 
+    mutate(toward_pct = (ifelse(is.na(toward_pct), 0, toward_pct))) %>% 
+    mutate(toward_pct = round(toward_pct, 1))
+
+towards_fair <- towards_target %>% filter(theme == "Fair")
+towards_thriving <- towards_target %>% filter(theme == "Thriving")
+towards_connected <- towards_target %>% filter(theme == "Connected")
+towards_green <- towards_target %>% filter(theme == "Green")
+towards_beautiful <- towards_target %>% filter(theme == "Beautiful")
+
+
 # functions _________________________________________________________________________________________________________
 # function to get values for each indicator - returns a list
 ind_vals <- function(indicator_id) {
@@ -184,6 +209,24 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
         layout(xaxis = list(title = 'Year'),
                yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}))
 }
+
+# function for theme progress towards the targets
+make_theme_plotly <- function(dataset, colour){
+    plot_ly(data = {dataset}, x = ~toward_pct, y = ~reorder(measure, toward_pct), name = 'Progress towards targets',
+            type = 'bar', orientation = 'h',
+            hoverinfo = "text",
+            text = ~paste('</br> Measure: ', measure,
+                          '</br> Baseline: ', baseline,
+                          '</br> Progress value: ', progress,
+                          '</br> Target: ', target,
+                          '</br> Progress towards target (%): ', toward_pct),
+            marker = list(color = glue("{colour}"),
+                          line = list(color = glue("{colour}"), width = 1))) %>%
+        layout(yaxis = list(title = "", showgrid = FALSE, showline = FALSE, showticklabels = TRUE),
+               xaxis = list(title = "Progress towards target (%)", zeroline = FALSE, showline = FALSE, showticklabels = TRUE, showgrid = TRUE)) 
+    
+}
+
 
 #the app ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -346,7 +389,13 @@ body <- dashboardBody(
         tabItem(tabName = "summary_fair",
                 fluidRow(
                     infoBox(title = "Theme", value = "Fair", color = "red", width = 12, icon=icon(list(src = "fair.png", width="80px"), lib="local")),
-                    box(title = "Notes:", "Fair data to come")
+                    box(title = "Notes:",
+                    "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
+                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
+                    width = 12)
+                ),
+                fluidRow(
+                    plotlyOutput("towards_fair_graph")
                 )
         ),
         
@@ -354,7 +403,13 @@ body <- dashboardBody(
         tabItem(tabName = "summary_thriving",
                 fluidRow(
                     infoBox(title = "Theme", value = "Thriving", color = "blue", width = 12, icon=icon(list(src = "thriving.png", width="80px"), lib="local")),
-                    box(title = "Notes:", "Thriving data to come")
+                    box(title = "Notes:",
+                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
+                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
+                        width = 12)
+                ),
+                fluidRow(
+                    plotlyOutput("towards_thriving_graph")
                 )
         ),
         
@@ -362,7 +417,13 @@ body <- dashboardBody(
         tabItem(tabName = "summary_connected",
                 fluidRow(
                     infoBox(title = "Theme", value = "Connected", color = "purple", width = 12, icon=icon(list(src = "connected.png", width="80px"), lib="local")),
-                    box(title = "Notes:", "Connected data to come")
+                    box(title = "Notes:",
+                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
+                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
+                        width = 12)
+                ),
+                fluidRow(
+                    plotlyOutput("towards_connected_graph")
                 )
         ),
         
@@ -370,7 +431,13 @@ body <- dashboardBody(
         tabItem(tabName = "summary_green",
                 fluidRow(
                     infoBox(title = "Theme", value = "Green", color = "green", width = 12, icon=icon(list(src = "green.png", width="80px"), lib="local")),
-                    box(title = "Notes:", "Green data to be added")
+                    box(title = "Notes:",
+                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
+                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
+                        width = 12)
+                ),
+                fluidRow(
+                    plotlyOutput("towards_green_graph")
                 )
         ),
         
@@ -378,7 +445,13 @@ body <- dashboardBody(
         tabItem(tabName = "summary_beautiful",
                 fluidRow(
                     infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 12, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
-                    box(title = "Notes:", "Work in progress!")
+                    box(title = "Notes:",
+                        "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.
+                        Progress towards the target is calculated as (the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100. This is rounded to one decimal place.",
+                        width = 12)
+                ),
+                fluidRow(
+                    plotlyOutput("towards_beautiful_graph")
                 )
         ),
         
@@ -567,6 +640,33 @@ server <- function(input, output) {
         else {
             infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("meh"), color = "orange")
         }
+    })
+    
+    #individual plotly graphs for theme progress
+    output$towards_fair_graph <- renderPlotly({  
+        print(
+            make_theme_plotly(towards_fair, "#E55048")
+        )
+    })
+    output$towards_thriving_graph <- renderPlotly({  
+        print(
+            make_theme_plotly(towards_thriving, "#31788F")
+        )
+    })
+    output$towards_connected_graph <- renderPlotly({  
+        print(
+            make_theme_plotly(towards_connected, "#6A4479")
+        )
+    })
+    output$towards_green_graph <- renderPlotly({  
+        print(
+            make_theme_plotly(towards_green, "#4EA546")
+        )
+    })
+    output$towards_beautiful_graph <- renderPlotly({  
+        print(
+            make_theme_plotly(towards_beautiful, "#E3A51E")
+        )
     })
     
 }
