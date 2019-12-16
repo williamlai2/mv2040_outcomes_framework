@@ -256,17 +256,18 @@ body <- dashboardBody(
                     infoBoxOutput("ibox_cat")
                 ),
                 
+                # info about the graph
+                fluidRow(
+                    box(title = "Measure", width = 4, background = "black", textOutput('title')),
+                    box(title = "Definition", width = 4, background = "black", textOutput('definition')),
+                    box(title = "Source", width = 4, background = "black", textOutput('source'))
+                ),
+                
                 # the graph
                 fluidRow(plotlyOutput("measure_graph") %>% 
                              withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 ),
                 
-                # info about the graph
-                fluidRow(
-                    box(title = "Measure", width = 4, background = "black", textOutput('title')),
-                    box(title = "Source", width = 4, background = "black", textOutput('source')),
-                    box(title = "Definition", width = 4, background = "black", textOutput('definition'))
-                ),
                 
                 #about progress towards desired change
                 fluidRow(
