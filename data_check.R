@@ -169,10 +169,14 @@ toward_target <- data_raw %>%
   pivot_wider(names_from = type, values_from = value) %>% 
   left_join(indicator_list, by = "id") %>% 
   select(id, baseline, progress, target, desired, theme) %>% 
-  mutate(toward = (progress - baseline)/(target - baseline) * 100) %>% # progress as a percentage towards the target from baseline
-  mutate(theme = factor(theme, levels = c("Fair", "Thriving", "Connected", "Green", "Beautiful")))  
+  mutate(toward_pct = (progress - baseline)/(target - baseline) * 100) %>% # progress as a percentage towards the target from baseline
+  mutate(theme = factor(theme, levels = c("Fair", "Thriving", "Connected", "Green", "Beautiful"))) %>% 
+  left_join(indicator_list, by = "id") %>% 
+  select(id, baseline, progress, target, theme = theme.x, desired = desired.x, toward_pct, measure) %>% 
+  mutate(toward_pct = (ifelse(is.na(toward_pct), 0, toward_pct)))
 
-ggplot(toward_target, aes(id, toward, fill = theme)) +
+#circumplex
+ggplot(toward_target, aes(id, toward_pct, fill = theme)) +
   geom_col(width = 1, col = "white") +
   coord_polar() +
   theme(plot.margin = margin(0, 0, 0, 0, "cm")) + ylim(-20, 100) + 
@@ -184,4 +188,13 @@ ggplot(toward_target, aes(id, toward, fill = theme)) +
   theme(legend.text = element_text(size = 10, face = "bold")) + #legend labels 
   theme(plot.title = element_text(size = 14, face = "bold")) #graph title
 
+# theme bars
+towards_fair <- toward_target %>% 
+  filter(theme == "Fair")
 
+plot_ly(x = ~towards_fair$toward_pct, y = ~reorder(towards_fair$measure, towards_fair$toward_pct), name = 'Progress towards targets',
+        type = 'bar', orientation = 'h',
+        marker = list(color = "#E55048",
+                      line = list(color = "#E55048", width = 1))) %>%
+  layout(yaxis = list(title = "", showgrid = FALSE, showline = FALSE, showticklabels = TRUE),
+         xaxis = list(title = "Progress towards target (%)", zeroline = FALSE, showline = FALSE, showticklabels = TRUE, showgrid = TRUE)) 
