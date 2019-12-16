@@ -122,6 +122,10 @@ ind_vals <- function(indicator_id) {
     commentary <- ind %>% 
         select(commentary) %>% 
         pull()
+    #target source
+    target_source <- ind %>% 
+        select(target_source) %>% 
+        pull()
     #rationale
     rationale <- ind %>% 
         select(rationale) %>% 
@@ -181,7 +185,7 @@ ind_vals <- function(indicator_id) {
         pull()
         
     #return list
-    return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "rationale" = rationale, "format" = fmt,
+    return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "target_source" = target_source, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
                         "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress, "baseline_year" = base_year)
 }
@@ -322,7 +326,8 @@ body <- dashboardBody(
                 #about progress towards desired change
                 fluidRow(
                     infoBoxOutput("ibox_desired"),
-                    infoBoxOutput("ibox_progress")
+                    infoBoxOutput("ibox_progress"),
+                    infoBox(title = "Target source", textOutput('target_source'), icon = shiny::icon("bullseye"), color = "black")
                 ),
                 
                 #commentary and rationale below the graph
@@ -533,6 +538,10 @@ server <- function(input, output) {
     output$commentary <- renderText({
         glue("{get_vals()$commentary}")
     })
+    #text - target_source
+    output$target_source <- renderText({
+        glue("{get_vals()$target_source}")
+    })
     #text - rationale
     output$rationale <- renderText({
         glue("{get_vals()$rationale}")
@@ -544,6 +553,10 @@ server <- function(input, output) {
     #text - change progress
     output$change_progress <- renderText({
         glue("{get_vals()$change_progress}")
+    })
+    #text - target source
+    output$target_source <- renderText({
+        glue("{get_vals()$target_source}")
     })
     
     # the theme box
