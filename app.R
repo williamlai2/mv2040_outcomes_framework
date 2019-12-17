@@ -106,8 +106,8 @@ towards_beautiful <- towards_target %>% filter(theme == "Beautiful")
 
 # text for box in individual themes
 ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
-                                 "As much of the information for the MV2040 outcomes framework depends on data from external sources, progress data is not available for some sources.</br>",
-                                 "</br>Progress towards the target is calculated as <b>(the progress figure - the baseline figure) divided by ( the target figure - the baseline figure) multiplited by 100</b>. This is rounded to one decimal place.</br>",
+                                 "As much of the information for the MV2040 outcomes framework depends on data from external sources, <b>progress data is not yet available for some sources</b>.</br>",
+                                 "</br>Progress towards the target is calculated as <b>(the progress value - the baseline value) divided by (the target value - the baseline value) multiplited by 100</b>. This is rounded to one decimal place.</br>",
                                  "</br>For full information about the measures, see the <b>'Individual measures'</b> tab."))
 
 
