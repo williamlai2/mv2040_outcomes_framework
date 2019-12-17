@@ -110,7 +110,6 @@ ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
                                  "</br>Progress towards the target is calculated as <b>(the progress value - the baseline value) divided by (the target value - the baseline value) multiplited by 100</b>. This is rounded to one decimal place.</br>",
                                  "</br>For full information about the measures, see the <b>'Individual measures'</b> tab."))
 
-
 # functions _________________________________________________________________________________________________________
 # function to get values for each indicator - returns a list
 ind_vals <- function(indicator_id) {
@@ -236,7 +235,6 @@ make_theme_plotly <- function(dataset, colour){
                xaxis = list(title = "Progress towards target (%)", zeroline = FALSE, showline = FALSE, showticklabels = TRUE, showgrid = TRUE)) 
     
 }
-
 
 #the app ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -459,7 +457,10 @@ body <- dashboardBody(
         #third tab
         tabItem(tabName = "notes",
                 fluidRow(
-                    box(title = "Notes:", "Work in progress!")
+                    box(title = "Notes:", "Work in progress!", width = 12),
+                    box(title = 'MV2040', tags$body(HTML("The MV2040 Strategy is Council’s long-term strategy and vision for a healthy ‘city of neighbourhoods’.",
+                                                         "Given Council’s commitment and investment in MV2040 - it will be important to develop systems to ensure we’re making evidenced based progress towards our Vision’s 20 strategic directions with associated targets.</br>",
+                                                         "</br>This MV2040 Outcomes Framework will assist Council to monitor, evaluate and report on its progress towards a healthy city.</br>")), width = 12)
                 )
         )
     )
