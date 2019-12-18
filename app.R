@@ -190,11 +190,24 @@ ind_vals <- function(indicator_id) {
         mutate(year = as.numeric(format(year, '%Y'))) %>% 
         select(year) %>% 
         pull()
+    #drop year -baseline
+    drop_year <- data_raw %>%
+        filter(id == {indicator_id}) %>% 
+        filter(type == "baseline") %>% 
+        select(year) %>% 
+        pull()
+    #drop value -baseline
+    drop_value <- data_raw %>%
+        filter(id == {indicator_id}) %>% 
+        filter(type == "baseline") %>% 
+        select(value) %>% 
+        pull()
+    
         
     #return list
     return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "target_source" = target_source, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
-                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress, "baseline_year" = base_year)
+                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress, "baseline_year" = base_year, "drop_year" = drop_year, "drop_value" = drop_value)
 }
 
 #function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
@@ -218,7 +231,9 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
                   hoverinfo='text',
                   error_y = list(type = "data", symmetric = FALSE, array = ~err_high, arrayminus = ~err_low)) %>%
         layout(xaxis = list(title = 'Year'),
-               yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}))
+               yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}),
+               shapes = list(x0 = ind_vals_output$drop_year, x1 = ind_vals_output$drop_year, y0 = 0, y1 = ind_vals_output$drop_value, line = list(color = "black"),
+                             type = "line", xref = "x", yref = "y", opacity = 0.3, fillcolor = "black"))
 }
 
 # function for theme progress towards the targets
