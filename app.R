@@ -191,13 +191,13 @@ ind_vals <- function(indicator_id) {
         select(year) %>% 
         pull()
     #drop year -baseline
-    drop_year <- data_raw %>%
+    baseline_year <- data_raw %>%
         filter(id == {indicator_id}) %>% 
         filter(type == "baseline") %>% 
         select(year) %>% 
         pull()
     #drop value -baseline
-    drop_value <- data_raw %>%
+    baseline_value <- data_raw %>%
         filter(id == {indicator_id}) %>% 
         filter(type == "baseline") %>% 
         select(value) %>% 
@@ -207,7 +207,7 @@ ind_vals <- function(indicator_id) {
     #return list
     return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "target_source" = target_source, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
-                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress, "baseline_year" = base_year, "drop_year" = drop_year, "drop_value" = drop_value)
+                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress, "baseline_year" = baseline_year, "baseline_value" = baseline_value)
 }
 
 #function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
@@ -232,9 +232,9 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
                   error_y = list(type = "data", symmetric = FALSE, array = ~err_high, arrayminus = ~err_low)) %>%
         layout(xaxis = list(title = 'Year'),
                yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}),
-               shapes = list(x0 = ind_vals_output$drop_year, x1 = ind_vals_output$drop_year, y0 = 0, y1 = ind_vals_output$drop_value, line = list(color = "black"),
+               shapes = list(x0 = ind_vals_output$baseline_year, x1 = ind_vals_output$baseline_year, y0 = 0, y1 = ind_vals_output$baseline_value, line = list(color = "black"),
                              type = "line", xref = "x", yref = "y", opacity = 0.3, fillcolor = "black"),
-               annotations = list(list(x = ind_vals_output$drop_year, y = 0, text = "Baseline", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, ax = 0, ay = -10), #baseline year
+               annotations = list(list(x = ind_vals_output$baseline_year, y = 0, text = "Baseline", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, ax = 0, ay = -10), #baseline year
                                   list(x = "2025-11-01", y = 0, text = "End of 2021-2025 \nCouncil Term", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, ax = 0, ay = -40)) # term
                )
 }
@@ -561,7 +561,7 @@ server <- function(input, output) {
     })
     #text - desired change with baseline number
     output$desired_change <- renderText({
-        glue("{get_vals()$desired_change} from {get_vals()$baseline_year} figure towards target")
+        glue("{get_vals()$desired_change} from baseline value towards target")
     })
     #text - change progress
     output$change_progress <- renderText({
