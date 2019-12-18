@@ -233,9 +233,9 @@ make_plotly <- function(ind_vals_output, rangemode_val = "tozero"){
         layout(xaxis = list(title = 'Year'),
                yaxis = list (title = ind_vals_output$value_unit, rangemode = {rangemode_val}),
                shapes = list(x0 = ind_vals_output$baseline_year, x1 = ind_vals_output$baseline_year, y0 = 0, y1 = ind_vals_output$baseline_value, line = list(color = "black"),
-                             type = "line", xref = "x", yref = "y", opacity = 0.3, fillcolor = "black"),
-               annotations = list(list(x = ind_vals_output$baseline_year, y = 0, text = "Baseline", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, ax = 0, ay = -10), #baseline year
-                                  list(x = "2025-11-01", y = 0, text = "End of 2021-2025 \nCouncil Term", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, ax = 0, ay = -40)) # term
+                             type = "line", xref = "x", yref = "y", opacity = 0.3, fillcolor = "black"), #baseline vertical line
+               annotations = list(list(x = ind_vals_output$baseline_year, y = 0, text = "Baseline", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, opacity = 0.6, ax = 0, ay = -10), #baseline year
+                                  list(x = "2025-11-01", y = 0, text = "End of 2021-2025 \nCouncil Term", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, opacity = 0.5, ax = 0, ay = -40)) # term
                )
 }
 
