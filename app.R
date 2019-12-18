@@ -253,7 +253,9 @@ make_theme_plotly <- function(dataset, colour){
             marker = list(color = glue("{colour}"),
                           line = list(color = glue("{colour}"), width = 1))) %>%
         layout(yaxis = list(title = "", showgrid = FALSE, showline = FALSE, showticklabels = TRUE),
-               xaxis = list(title = "Progress towards target (%)", zeroline = FALSE, showline = FALSE, showticklabels = TRUE, showgrid = TRUE)) 
+               xaxis = list(title = "Progress towards target (%)", zeroline = FALSE, showline = FALSE, showticklabels = TRUE, showgrid = TRUE),
+               annotations = list(list(x = 100, y = 0, text = "Target", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, opacity = 0.6, ax = 0, ay = -40)) #target
+        ) 
     
 }
 
@@ -274,12 +276,12 @@ sidebar <- dashboardSidebar(
     sidebarMenu(
         menuItem("Individual measures", tabName = "measures"),
         menuItem("Summary",
-                 menuSubItem("Progress towards targets", tabName = "progress"),
                  menuSubItem("Fair", tabName = "summary_fair"),
                  menuSubItem("Thriving", tabName = "summary_thriving"),
                  menuSubItem("Connected", tabName = "summary_connected"),
                  menuSubItem("Green", tabName = "summary_green"),
-                 menuSubItem("Beautiful", tabName = "summary_beautiful")
+                 menuSubItem("Beautiful", tabName = "summary_beautiful"),
+                 menuSubItem("Progress towards targets", tabName = "progress")
         ),
         menuItem("Notes", tabName = "notes")
     )
