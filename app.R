@@ -94,9 +94,10 @@ towards_target <- data_raw %>%
     mutate(toward_pct = (progress - baseline)/(target - baseline) * 100) %>% # progress as a percentage towards the target from baseline
     mutate(theme = factor(theme, levels = c("Fair", "Thriving", "Connected", "Green", "Beautiful"))) %>% 
     left_join(indicator_list, by = "id") %>% 
-    select(id, baseline, progress, target, theme = theme.x, desired = desired.x, toward_pct, measure) %>% 
+    select(id, baseline, progress, target, theme = theme.x, desired = desired.x, toward_pct, measure, category) %>% 
     mutate(toward_pct = (ifelse(is.na(toward_pct), 0, toward_pct))) %>% 
-    mutate(toward_pct = round(toward_pct, 1))
+    mutate(toward_pct = round(toward_pct, 1)) %>% 
+    left_join(data_format, by = "id")
 
 towards_fair <- towards_target %>% filter(theme == "Fair")
 towards_thriving <- towards_target %>% filter(theme == "Thriving")
@@ -108,6 +109,7 @@ towards_beautiful <- towards_target %>% filter(theme == "Beautiful")
 ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
                                  "As much of the information for the MV2040 outcomes framework depends on data from external sources, <b>progress data is not yet available for some sources</b>.</br>",
                                  "</br>Progress towards the target is calculated as <b>(the progress value - the baseline value) divided by (the target value - the baseline value) multiplited by 100</b>. This is rounded to one decimal place.</br>",
+                                 "</br>Progress of 100 per cent means that the target has been achieved. Positive values indicate progression towards the target. Negative values indicate regression away from the target.</br>",
                                  "</br>For full information about the measures, see the <b>'Individual measures'</b> tab."))
 
 # functions _________________________________________________________________________________________________________
@@ -225,6 +227,7 @@ make_theme_plotly <- function(dataset, colour){
             type = 'bar', orientation = 'h',
             hoverinfo = "text",
             text = ~paste('</br> Measure: ', measure,
+                          '</br> Unit: ', value_format,
                           '</br> Baseline: ', baseline,
                           '</br> Progress value: ', progress,
                           '</br> Target: ', target,

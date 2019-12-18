@@ -174,7 +174,8 @@ towards_target <- data_raw %>%
   left_join(indicator_list, by = "id") %>% 
   select(id, baseline, progress, target, theme = theme.x, desired = desired.x, toward_pct, measure) %>% 
   mutate(toward_pct = (ifelse(is.na(toward_pct), 0, toward_pct))) %>% 
-  mutate(toward_pct = round(toward_pct, 1))
+  mutate(toward_pct = round(toward_pct, 1)) %>% 
+  left_join(data_format, by = "id")
 
 #circumplex
 ggplot(towards_target, aes(id, toward_pct, fill = theme)) +
