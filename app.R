@@ -133,6 +133,10 @@ ind_vals <- function(indicator_id) {
     target_source <- ind %>% 
         select(target_source) %>% 
         pull()
+    #council influence
+    council_inf <- ind %>% 
+        select(influence) %>% 
+        pull()
     #rationale
     rationale <- ind %>% 
         select(rationale) %>% 
@@ -207,7 +211,8 @@ ind_vals <- function(indicator_id) {
     #return list
     return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "target_source" = target_source, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
-                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress, "baseline_year" = baseline_year, "baseline_value" = baseline_value)
+                        "theme_colour" = colour_select, "strategic_direction" = strat_dir, "desired_change" = desired, "change_progress" = change_progress,
+                        "council_inf" = council_inf, "baseline_year" = baseline_year, "baseline_value" = baseline_value)
 }
 
 #function for a plotly graph - takes in the output from the indicator, then an optional rangemode value
@@ -338,9 +343,10 @@ body <- dashboardBody(
                 
                 # info about the graph
                 fluidRow(
-                    box(title = "Measure", width = 4, background = "black", textOutput('title')),
-                    box(title = "Definition", width = 4, background = "black", textOutput('definition')),
-                    box(title = "Source", width = 4, background = "black", textOutput('source'))
+                    box(title = "Measure", width = 3, background = "black", textOutput('title')),
+                    box(title = "Definition", width = 3, background = "black", textOutput('definition')),
+                    box(title = "Source", width = 3, background = "black", textOutput('source')),
+                    box(title = "Target source", width = 3, background = "black", textOutput('target_source'))
                 ),
                 
                 # the graph
@@ -353,7 +359,7 @@ body <- dashboardBody(
                 fluidRow(
                     infoBoxOutput("ibox_desired"),
                     infoBoxOutput("ibox_progress"),
-                    infoBox(title = "Target source", textOutput('target_source'), icon = shiny::icon("bullseye"), color = "black")
+                    infoBox(title = "Council's infulence", textOutput('council_inf'), icon = shiny::icon("clipboard"), color = "black")
                 ),
                 
                 #commentary and rationale below the graph
@@ -555,6 +561,10 @@ server <- function(input, output) {
     #text - target_source
     output$target_source <- renderText({
         glue("{get_vals()$target_source}")
+    })
+    #text - council's influence
+    output$council_inf <- renderText({
+        glue("{get_vals()$council_inf}")
     })
     #text - rationale
     output$rationale <- renderText({
