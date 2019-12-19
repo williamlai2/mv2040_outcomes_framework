@@ -346,7 +346,7 @@ body <- dashboardBody(
                     box(title = "Measure", width = 3, background = "black", textOutput('title')),
                     box(title = "Definition", width = 3, background = "black", textOutput('definition')),
                     box(title = "Source", width = 3, background = "black", textOutput('source')),
-                    box(title = "Target source", width = 3, background = "black", textOutput('target_source'))
+                    box(title = "Target rationale", width = 3, background = "black", textOutput('target_source'))
                 ),
                 
                 # the graph
