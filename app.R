@@ -110,7 +110,7 @@ ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
                                  "As much of the information for the MV2040 outcomes framework depends on data from external sources, <b>progress data is not yet available for some sources</b>.</br>",
                                  "</br>Progress towards the target is calculated as <b>(the progress value - the baseline value) divided by (the target value - the baseline value) multiplited by 100</b>. This is rounded to one decimal place.</br>",
                                  "</br>Progress of 100 per cent means that the target has been achieved. Positive values indicate progression towards the target. Negative values indicate regression away from the target.</br>",
-                                 "</br>For full information about the measures, see the <b>'Individual measures'</b> tab."))
+                                 "</br>Hover over the bars for more information. For full details about the measures, see the <b>'Individual measures'</b> tab."))
 
 # functions _________________________________________________________________________________________________________
 # function to get values for each indicator - returns a list
