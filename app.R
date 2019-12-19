@@ -256,7 +256,6 @@ make_theme_plotly <- function(dataset, colour){
                xaxis = list(title = "Progress towards target (%)", zeroline = FALSE, showline = FALSE, showticklabels = TRUE, showgrid = TRUE),
                annotations = list(list(x = 100, y = 0, text = "Target", xref = "x", yref = "y", showarrow = TRUE, arrowhead = 0, opacity = 0.6, ax = 0, ay = -40)) #target
         ) 
-    
 }
 
 #the app ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
