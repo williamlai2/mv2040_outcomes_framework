@@ -128,3 +128,4 @@ ggplot(circ_inds3, aes(text, current, fill = theme)) +
   guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 11))) + #legend title
   theme(legend.text = element_text(size = 10, face = "bold")) + #legend labels 
   theme(plot.title = element_text(size = 14, face = "bold")) #graph title
+
