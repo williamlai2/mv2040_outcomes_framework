@@ -1,4 +1,3 @@
-#add libraries -don't use pacman - it won't work when published to shinyapps
 library(shiny)
 library(tidyverse)
 library(glue)
@@ -80,6 +79,37 @@ measure_list <- indicator_list %>%
   select(measure) %>% 
   pull()
 
+# progress towards the targets
+towards_target <- data_raw %>% 
+  filter(type != "prior")  %>% 
+  select(id, year, value, type) %>% 
+  arrange(desc(year)) %>% 
+  group_by(id, type)  %>% 
+  slice(1) %>% #takes baseline and latest progress figure
+  select(-year) %>% 
+  pivot_wider(names_from = type, values_from = value) %>% 
+  left_join(indicator_list, by = "id") %>% 
+  select(id, baseline, progress, target, desired, theme) %>% 
+  mutate(toward_pct = (progress - baseline)/(target - baseline) * 100) %>% # progress as a percentage towards the target from baseline
+  mutate(theme = factor(theme, levels = c("Fair", "Thriving", "Connected", "Green", "Beautiful"))) %>% 
+  left_join(indicator_list, by = "id") %>% 
+  select(id, baseline, progress, target, theme = theme.x, desired = desired.x, toward_pct, measure, category) %>% 
+  mutate(toward_pct = (ifelse(is.na(toward_pct), 0, toward_pct))) %>% 
+  mutate(toward_pct = round(toward_pct, 1)) %>% 
+  left_join(data_format, by = "id")
+
+towards_fair <- towards_target %>% filter(theme == "Fair")
+towards_thriving <- towards_target %>% filter(theme == "Thriving")
+towards_connected <- towards_target %>% filter(theme == "Connected")
+towards_green <- towards_target %>% filter(theme == "Green")
+towards_beautiful <- towards_target %>% filter(theme == "Beautiful")
+
+# text for box in individual themes
+ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
+                                 "Progress towards the target is calculated as <b>(the progress value - the baseline value) divided by (the target value - the baseline value) multiplited by 100</b>. This is rounded to one decimal place.</br>",
+                                 "</br>Progress of 100 per cent means that the target has been achieved. Positive values <b>('Good')</b> indicate progression towards the target. Negative values <b>('Bad')</b> indicate regression away from the target.</br>",
+                                 "</br>As much of the information for the MV2040 outcomes framework depends on data from external sources, <b>progress data is not yet available for some sources</b>.</br>",
+                                 "</br>Hover over the bars for more information. For full details about the measures, see the <b>'Individual measures'</b> tab."))
 
 ###############################
 
