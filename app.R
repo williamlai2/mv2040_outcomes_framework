@@ -822,10 +822,10 @@ server <- function(input, output) {
     })
     output$circ1 <- renderPlot({  
             circ1
-    }, height = 1300, width = 1300)
+    }, height = 1000, width = 1000)
     output$circ2 <- renderPlot({  
             circ2
-    }, height = 1300, width = 1300)
+    }, height = 1000, width = 1000)
     
 }
 
