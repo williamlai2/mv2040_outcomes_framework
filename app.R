@@ -511,8 +511,9 @@ body <- dashboardBody(
                 fluidRow(
                     box(tags$body(HTML("<b>Progress towards targets by category and theme</b></br>",
                                        "</br>Note: This graph is <b> not interactive</b>.</br>",
-                                       "</br> The graph shows progress from the baseline state <b> (0%) </b> towards the target",
-                                       "Data is only available for some themes. Progress by theme has been calculated by aggregating measures within each category")), width = 12)
+                                       "</br> The graph shows progress from the baseline state <b> (0%) </b> towards the target <b>(100%)</b>.",
+                                       "There may be negative values where there has been a regression away from the target.",
+                                       "</br>Data is only available for some themes. Progress by theme has been calculated by aggregating measures within each category")), width = 12)
                 ),
                 fluidRow(
                     plotOutput("circ1")
@@ -525,7 +526,7 @@ body <- dashboardBody(
                     box(tags$body(HTML("<b>Progress towards targets by measure</b></br>",
                                        "</br>Note: This graph is <b> not interactive</b>.</br>",
                                        "</br> The graph shows progress towards the target for <b>selected measures only</b> (those measured as a percentage where the desired outcomes is an increase.",
-                                       "The darker shading indicates the current state. The lighter shading indicates the target for 2040")), width = 12)
+                                       "The darker shading indicates the current state while the lighter shading indicates where we would like to be in 2040 (the target). Real percentage values have been used.")), width = 12)
                 ),
                 fluidRow(
                     plotOutput("circ2")
