@@ -116,7 +116,7 @@ circ_inds3 <- circ_inds1 %>%
   mutate(text = factor(text, levels = circ_inds2))
 
 # non-interactive circumplex - selected measures only
-ggplot(circ_inds3, aes(text, current, fill = theme)) +
+circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
   geom_col(width = 1, col = "white", alpha = 0.5) + ylim(0, 100) + coord_polar() + #current
   geom_col(aes(text, target), alpha = 0.5, width = 1, col = "white") + ylim(0, 100) + coord_polar() + # target
   theme_minimal() +
@@ -129,3 +129,23 @@ ggplot(circ_inds3, aes(text, current, fill = theme)) +
   theme(legend.text = element_text(size = 10, face = "bold")) + #legend labels 
   theme(plot.title = element_text(size = 14, face = "bold")) #graph title
 
+circ_inds3
+
+#test of plotly
+#investigate further https://plot.ly/r/legacy-polar-chart/
+plot_ly(circ_inds3, r = ~current, t = ~measure) %>% 
+  add_area(color = ~theme) %>% 
+  layout(radialaxis = list(ticksuffix = "%"))
+
+
+plot_ly(circ_inds3, 
+        type = 'scatterpolar',
+        mode = 'lines',
+        r = ~current,
+        t = ~measure) %>% 
+  add_area(color = ~theme)
+
+# with ggraph !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+library(ggiraph)
+gg <- circ2 + geom_col_interactive(aes(tooltip = current), size = 2)
+girafe(code = print(gg) )
