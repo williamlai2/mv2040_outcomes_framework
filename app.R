@@ -112,6 +112,86 @@ ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
                                  "</br>As much of the information for the MV2040 outcomes framework depends on data from external sources, <b>progress data is not yet available for some sources</b>.</br>",
                                  "</br>Hover over the bars for more information. For full details about the measures, see the <b>'Individual measures'</b> tab."))
 
+# circumplexes ________________________________________________________________________________________________________________________________________________________
+# order for circ data
+cat_order <- towards_target %>% 
+    arrange(theme) %>%
+    ungroup() %>% 
+    distinct(category) %>% 
+    pull()
+
+#circ_data  
+circ_data1 <- towards_target %>%
+    ungroup() %>% 
+    select(theme, category, toward_pct) %>% 
+    group_by(theme, category) %>% 
+    mutate(mean_toward_pct = mean(toward_pct)) %>% 
+    distinct(category, mean_toward_pct) %>% 
+    mutate(text = str_replace_all(category, " ", "\n")) %>% 
+    ungroup() %>% 
+    mutate(category = factor(category, levels = cat_order)) %>% 
+    arrange(category)
+
+# text data order
+circ_data2 <- circ_data1 %>% 
+    select(text) %>% 
+    pull()
+
+# with text factor
+circ_data3 <- circ_data1 %>% 
+    mutate(text = factor(text, levels = circ_data2))
+
+# non-interactive circumplex grouped by category
+circ1 <- ggplot(circ_data3, aes(text, mean_toward_pct, fill = theme)) +
+    geom_col(width = 1, col = "white") +
+    coord_polar() + theme_minimal() +
+    theme(plot.margin = margin(0, 0, 0, 0, "cm")) + ylim(-50, 100) + 
+    scale_fill_manual(values = c("Fair" = "#E55048", "Thriving" = "#31788F", "Connected" = "#6A4479", "Green" = "#4EA546", "Beautiful" = "#E3A51E"), drop = FALSE) +
+    labs(title = NULL, x = NULL, y = "Progress (%)", fill = "Theme") +
+    theme(legend.position = c(0.92, 0.92)) + #legend position
+    theme(axis.text = element_text(face = "bold", size = 12)) + # xlab titles
+    guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 11))) + #legend title
+    theme(legend.text = element_text(size = 10, face = "bold")) #legend labels 
+
+
+# other version of the circumplex - only the percentages
+circ_inds1 <- towards_target %>%
+    ungroup() %>% 
+    filter(desired == "Increase") %>% 
+    left_join(data_format, by = "id") %>% 
+    select(id, baseline, progress, target, theme, desired, toward_pct, measure, category, value_format = value_format.x) %>% 
+    filter(value_format == "Percentage") %>% 
+    select(theme, measure, baseline, progress, target) %>% 
+    mutate(current = case_when(!is.na(progress) ~ progress,
+                               TRUE ~ baseline)) %>% 
+    select(-baseline, -progress) %>% 
+    arrange(theme) %>% 
+    mutate(text = str_replace_all(measure, " ", "\n"))
+
+# order
+circ_inds2 <- circ_inds1 %>% 
+    select(text) %>% 
+    pull()
+
+#reordered
+circ_inds3 <- circ_inds1 %>% 
+    mutate(text = factor(text, levels = circ_inds2))
+
+# non-interactive circumplex - selected measures only
+circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
+    geom_col(width = 1, col = "white", alpha = 0.5) + ylim(0, 100) + coord_polar() + #current
+    geom_col(aes(text, target), alpha = 0.5, width = 1, col = "white") + ylim(0, 100) + coord_polar() + # target
+    theme_minimal() +
+    theme(plot.margin = margin(0, 0, 0, 0, "cm")) +
+    scale_fill_manual(values = c("Fair" = "#E55048", "Thriving" = "#31788F", "Connected" = "#6A4479", "Green" = "#4EA546", "Beautiful" = "#E3A51E"), drop = FALSE) +
+    labs(title = NULL, subtitle = NULL, x = NULL, y = "Percentage", fill = "Theme") +
+    theme(legend.position = c(0.92, 0.9)) + #legend position
+    theme(axis.text = element_text(face = "bold", size = 10)) + # xlab titles
+    guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 11))) + #legend title
+    theme(legend.text = element_text(size = 10, face = "bold")) #legend labels 
+
+
+
 # functions _________________________________________________________________________________________________________
 # function to get values for each indicator - returns a list
 ind_vals <- function(indicator_id) {
@@ -279,13 +359,17 @@ sidebar <- dashboardSidebar(
     width = 200,
     sidebarMenu(
         menuItem("Individual measures", tabName = "measures"),
-        menuItem("Summary",
+        menuItem("By theme",
                  menuSubItem("Fair", tabName = "summary_fair"),
                  menuSubItem("Thriving", tabName = "summary_thriving"),
                  menuSubItem("Connected", tabName = "summary_connected"),
                  menuSubItem("Green", tabName = "summary_green"),
-                 menuSubItem("Beautiful", tabName = "summary_beautiful"),
-                 menuSubItem("Progress towards targets", tabName = "progress")
+                 menuSubItem("Beautiful", tabName = "summary_beautiful")
+        ),
+        menuItem("Summaries",
+                 menuSubItem("Circumplex 1", tabName = "circ1"),
+                 menuSubItem("Circumplex 2", tabName = "circ2"),
+                 menuSubItem("Progress by theme", tabName = "progress")
         ),
         menuItem("Notes", tabName = "notes")
     )
@@ -368,7 +452,7 @@ body <- dashboardBody(
                     box(title = "Rationale", width = 6, textOutput('rationale'))
                 ),
         ),
-        # Second tab content
+        # progress by theme content
         tabItem(tabName = "progress",
                 h2("Summary of progress towards the 2040 targets by theme"),
                 br(),
@@ -420,6 +504,32 @@ body <- dashboardBody(
                 fluidRow(
                     box(title = "Notes", "Figures are rounded and may not add up to 100 per cent")
                 ),
+        ),
+        
+        #circumplex 1
+        tabItem(tabName = "circ1",
+                fluidRow(
+                    box(tags$body(HTML("<b>Progress towards targets by category and theme</b></br>",
+                                       "</br>Note: This graph is <b> not interactive</b>.</br>",
+                                       "</br> The graph shows progress from the baseline state <b> (0%) </b> towards the target",
+                                       "Data is only available for some themes. Progress by theme has been calculated by aggregating measures within each category")), width = 12)
+                ),
+                fluidRow(
+                    plotOutput("circ1")
+                )
+        ),
+        
+        #circumplex 2
+        tabItem(tabName = "circ2",
+                fluidRow(
+                    box(tags$body(HTML("<b>Progress towards targets by measure</b></br>",
+                                       "</br>Note: This graph is <b> not interactive</b>.</br>",
+                                       "</br> The graph shows progress towards the target for <b>selected measures only</b> (those measured as a percentage where the desired outcomes is an increase.",
+                                       "The darker shading indicates the current state. The lighter shading indicates the target for 2040")), width = 12)
+                ),
+                fluidRow(
+                    plotOutput("circ2")
+                )
         ),
         
         #theme tabs - fair
@@ -710,6 +820,12 @@ server <- function(input, output) {
             make_theme_plotly(towards_beautiful, "#E3A51E")
         )
     })
+    output$circ1 <- renderPlot({  
+            circ1
+    }, height = 1300, width = 1300)
+    output$circ2 <- renderPlot({  
+            circ2
+    }, height = 1300, width = 1300)
     
 }
 
