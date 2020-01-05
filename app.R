@@ -779,7 +779,10 @@ server <- function(input, output) {
         )
     })
     output$circ2 <- renderGirafe({  
-            girafe(ggobj = circ2gg, width_svg = 12, height_svg = 12)
+            girafe(ggobj = circ2gg, width_svg = 12, height_svg = 12,
+                   options = list(
+                       opts_hover(css = "fill:aqua;")
+                   ))
     })
     
 }
