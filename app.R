@@ -115,45 +115,6 @@ ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
 
 # circumplexes ________________________________________________________________________________________________________________________________________________________
 # order for circ data
-cat_order <- towards_target %>% 
-    arrange(theme) %>%
-    ungroup() %>% 
-    distinct(category) %>% 
-    pull()
-
-#circ_data  
-circ_data1 <- towards_target %>%
-    ungroup() %>% 
-    select(theme, category, toward_pct) %>% 
-    group_by(theme, category) %>% 
-    mutate(mean_toward_pct = mean(toward_pct)) %>% 
-    distinct(category, mean_toward_pct) %>% 
-    mutate(text = str_replace_all(category, " ", "\n")) %>% 
-    ungroup() %>% 
-    mutate(category = factor(category, levels = cat_order)) %>% 
-    arrange(category)
-
-# text data order
-circ_data2 <- circ_data1 %>% 
-    select(text) %>% 
-    pull()
-
-# with text factor
-circ_data3 <- circ_data1 %>% 
-    mutate(text = factor(text, levels = circ_data2))
-
-# non-interactive circumplex grouped by category
-circ1 <- ggplot(circ_data3, aes(text, mean_toward_pct, fill = theme)) +
-    geom_col(width = 1, col = "white") +
-    coord_polar() + theme_minimal() +
-    theme(plot.margin = margin(0, 0, 0, 0, "cm")) + ylim(-50, 100) + 
-    scale_fill_manual(values = c("Fair" = "#E55048", "Thriving" = "#31788F", "Connected" = "#6A4479", "Green" = "#4EA546", "Beautiful" = "#E3A51E"), drop = FALSE) +
-    labs(title = NULL, x = NULL, y = "Progress (%)", fill = "Theme") +
-    theme(legend.position = c(0.92, 0.92)) + #legend position
-    theme(axis.text = element_text(face = "bold", size = 14)) + # xlab titles
-    guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 12))) + #legend title
-    theme(legend.text = element_text(size = 12, face = "bold")) #legend labels 
-
 
 # other version of the circumplex - only the percentages
 circ_inds1 <- towards_target %>%
@@ -179,6 +140,14 @@ circ_inds3 <- circ_inds1 %>%
     mutate(text = factor(text, levels = circ_inds2))
 
 # non-interactive circumplex - selected measures only
+str_model <- paste0("<tr><td>Measure: </td><td>%s</td></tr>", 
+                    "<tr><td>Current: </td><td>%.01f%%</td></tr>", 
+                    "<tr><td>Target: </td><td>%.01f%%</td></tr>")
+
+circ_inds3$tooltip <- sprintf(str_model, circ_inds3$measure, circ_inds3$current, circ_inds3$target)
+
+circ_inds3$tooltip <- paste0( "<table>", circ_inds3$tooltip, "</table>")
+
 circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
     geom_col(width = 1, col = "white", alpha = 0.5) + ylim(0, 100) + coord_polar() + #current
     geom_col(aes(text, target), alpha = 0.5, width = 1, col = "white") + ylim(0, 100) + coord_polar() + # target
@@ -191,10 +160,8 @@ circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
     guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 12))) + #legend title
     theme(legend.text = element_text(size = 12, face = "bold")) #legend labels 
 
-#ggiraph
-circ2gg <- circ2 + geom_col_interactive(aes(tooltip = current, data_id = measure), size = 2)
+circ2gg <- circ2 + geom_col_interactive(aes(tooltip = tooltip, data_id = measure), size = 2)
 girafe(code = print(circ2gg) )
-
 
 # functions _________________________________________________________________________________________________________
 # function to get values for each indicator - returns a list
@@ -371,8 +338,7 @@ sidebar <- dashboardSidebar(
                  menuSubItem("Beautiful", tabName = "summary_beautiful")
         ),
         menuItem("Summaries",
-                 menuSubItem("Circumplex 1", tabName = "circ1"),
-                 menuSubItem("Circumplex 2", tabName = "circ2"),
+                 menuSubItem("Circumplex", tabName = "circ2"),
                  menuSubItem("Progress by theme", tabName = "progress")
         ),
         menuItem("Notes", tabName = "notes")
@@ -510,27 +476,14 @@ body <- dashboardBody(
                 ),
         ),
         
-        #circumplex 1
-        tabItem(tabName = "circ1",
-                fluidRow(
-                    box(tags$body(HTML("<b>Progress towards targets by category and theme</b></br>",
-                                       "</br>Note: This graph is <b> not interactive</b>.</br>",
-                                       "</br> The graph shows progress from the baseline state <b> (0%) </b> towards the target <b>(100%)</b>.",
-                                       "There may be negative values where there has been a regression away from the target.",
-                                       "</br>Data is only available for some themes. Progress by theme has been calculated by aggregating measures within each category")), width = 12)
-                ),
-                fluidRow(
-                    plotOutput("circ1")
-                )
-        ),
-        
         #circumplex 2
         tabItem(tabName = "circ2",
                 fluidRow(
                     box(tags$body(HTML("<b>Progress towards targets by measure</b></br>",
-                                       "</br>Note: This graph is only<b> partially interactive</b>. You can hover over the wedges to see the current progress.</br>",
+                                       "</br>You can hover over the wedges to see the progress</br>",
                                        "</br> The graph shows progress towards the target for <b>selected measures only</b> (those measured as a percentage where the desired outcomes is an increase.",
-                                       "The darker shading indicates the current state while the lighter shading indicates where we would like to be in 2040 (the target). Real percentage values have been used.")), width = 12)
+                                       "The darker shading indicates the current state while the lighter shading indicates where we would like to be in 2040 (the target). Real percentage values have been used.</br>",
+                                       "<br>Note: The image size is fixed.</br>")), width = 12)
                 ),
                 fluidRow(
                     girafeOutput("circ2")
@@ -825,9 +778,6 @@ server <- function(input, output) {
             make_theme_plotly(towards_beautiful, "#E3A51E")
         )
     })
-    output$circ1 <- renderPlot({  
-            circ1
-    }, height = 1000, width = 1000)
     output$circ2 <- renderGirafe({  
             girafe(ggobj = circ2gg, width_svg = 12, height_svg = 12)
     })

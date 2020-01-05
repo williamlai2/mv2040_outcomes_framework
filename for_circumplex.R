@@ -149,3 +149,30 @@ plot_ly(circ_inds3,
 library(ggiraph)
 gg <- circ2 + geom_col_interactive(aes(tooltip = current, data_id = measure), size = 2)
 girafe(code = print(gg) )
+
+circ_inds4 
+
+#test better tooltip
+str_model <- paste0("<tr><td>Measure: </td><td>%s</td></tr>", 
+                       "<tr><td>Current: </td><td>%.01f%%</td></tr>", 
+                       "<tr><td>Target: </td><td>%.01f%%</td></tr>")
+
+circ_inds3$tooltip <- sprintf(str_model, circ_inds3$measure, circ_inds3$current, circ_inds3$target)
+
+circ_inds3$tooltip <- paste0( "<table>", circ_inds3$tooltip, "</table>")
+
+circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
+  geom_col(width = 1, col = "white", alpha = 0.5) + ylim(0, 100) + coord_polar() + #current
+  geom_col(aes(text, target), alpha = 0.5, width = 1, col = "white") + ylim(0, 100) + coord_polar() + # target
+  theme_minimal() +
+  theme(plot.margin = margin(0, 0, 0, 0, "cm")) +
+  scale_fill_manual(values = c("Fair" = "#E55048", "Thriving" = "#31788F", "Connected" = "#6A4479", "Green" = "#4EA546", "Beautiful" = "#E3A51E"), drop = FALSE) +
+  labs(title = "Progress towards targets", subtitle = "Selected measures only", x = NULL, y = "Percentage", fill = "Theme", caption = "The darker shading indicates the current state, the lighter shading indicates the target for 2040.") +
+  theme(legend.position = c(0.92, 0.9)) + #legend position
+  theme(axis.text = element_text(face = "bold", size = 10)) + # xlab titles
+  guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 11))) + #legend title
+  theme(legend.text = element_text(size = 10, face = "bold")) + #legend labels 
+  theme(plot.title = element_text(size = 14, face = "bold")) #graph title
+
+gg <- circ2 + geom_col_interactive(aes(tooltip = tooltip, data_id = measure), size = 2)
+girafe(code = print(gg) )
