@@ -9,6 +9,7 @@ library(scales)
 library(shinydashboard)
 library(shinycssloaders)
 library(apputils)
+library(ggiraph)
 
 #disable scientific notation
 options(scipen = 999)
@@ -190,6 +191,9 @@ circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
     guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 12))) + #legend title
     theme(legend.text = element_text(size = 12, face = "bold")) #legend labels 
 
+#ggiraph
+circ2gg <- circ2 + geom_col_interactive(aes(tooltip = current, data_id = measure), size = 2)
+girafe(code = print(circ2gg) )
 
 
 # functions _________________________________________________________________________________________________________
@@ -524,12 +528,12 @@ body <- dashboardBody(
         tabItem(tabName = "circ2",
                 fluidRow(
                     box(tags$body(HTML("<b>Progress towards targets by measure</b></br>",
-                                       "</br>Note: This graph is <b> not interactive</b>.</br>",
+                                       "</br>Note: This graph is only<b> partially interactive</b>. You can hover over the wedges to see the current progress.</br>",
                                        "</br> The graph shows progress towards the target for <b>selected measures only</b> (those measured as a percentage where the desired outcomes is an increase.",
                                        "The darker shading indicates the current state while the lighter shading indicates where we would like to be in 2040 (the target). Real percentage values have been used.")), width = 12)
                 ),
                 fluidRow(
-                    plotOutput("circ2")
+                    girafeOutput("circ2")
                 )
         ),
         
@@ -824,9 +828,9 @@ server <- function(input, output) {
     output$circ1 <- renderPlot({  
             circ1
     }, height = 1000, width = 1000)
-    output$circ2 <- renderPlot({  
-            circ2
-    }, height = 1000, width = 1000)
+    output$circ2 <- renderGirafe({  
+            girafe(ggobj = circ2gg, width_svg = 12, height_svg = 12)
+    })
     
 }
 

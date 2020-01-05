@@ -147,5 +147,5 @@ plot_ly(circ_inds3,
 
 # with ggraph !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 library(ggiraph)
-gg <- circ2 + geom_col_interactive(aes(tooltip = current), size = 2)
+gg <- circ2 + geom_col_interactive(aes(tooltip = current, data_id = measure), size = 2)
 girafe(code = print(gg) )
