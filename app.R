@@ -156,7 +156,7 @@ circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
     scale_fill_manual(values = c("Fair" = "#E55048", "Thriving" = "#31788F", "Connected" = "#6A4479", "Green" = "#4EA546", "Beautiful" = "#E3A51E"), drop = FALSE) +
     labs(title = NULL, subtitle = NULL, x = NULL, y = "Percentage", fill = "Theme") +
     theme(legend.position = c(0.92, 0.95)) + #legend position
-    theme(axis.text = element_text(face = "bold", size = 14)) + # xlab titles
+    theme(axis.text = element_text(face = "bold", size = 13)) + # xlab titles
     guides(fill = guide_legend(title.theme = element_text(face = "bold", size = 12))) + #legend title
     theme(legend.text = element_text(size = 12, face = "bold")) #legend labels 
 
