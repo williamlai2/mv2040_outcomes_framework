@@ -140,7 +140,7 @@ circ_inds3 <- circ_inds1 %>%
     mutate(text = factor(text, levels = circ_inds2))
 
 # non-interactive circumplex - selected measures only
-str_model <- paste0("<tr><td>Measure: </td><td>%s</td></tr>", 
+str_model <- paste0("<tr><td>Measure </td><td>: %s</td></tr>", 
                     "<tr><td>Current: </td><td>%.01f%%</td></tr>", 
                     "<tr><td>Target: </td><td>%.01f%%</td></tr>")
 
