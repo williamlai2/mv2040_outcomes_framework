@@ -553,7 +553,7 @@ body <- dashboardBody(
         #third tab
         tabItem(tabName = "notes",
                 fluidRow(
-                    box(title = "Notes:", "This is a work in progress.", width = 12),
+                    box(title = "Notes:", "This is a work in progress. Contact research@mvcc.vic.gov.au if you have any queries.", width = 12),
                     box(title = 'MV2040', tags$body(HTML("The MV2040 Strategy is Council’s long-term strategy and vision for a healthy ‘city of neighbourhoods’.",
                                                          "Given Council’s commitment and investment in MV2040 - it will be important to develop systems to ensure we’re making evidenced based progress towards our Vision’s 20 strategic directions with associated targets.</br>",
                                                          "</br>This MV2040 Outcomes Framework will assist Council to monitor, evaluate and report on its progress towards a healthy city.</br>")), width = 12)
