@@ -572,7 +572,7 @@ server <- function(input, output) {
             select(measure) %>% 
             pull()
     })
-    #takes filted input by theme and outputs measures for selection
+    #takes filtered input by theme and outputs measures for selection
     output$measure_output <- renderUI({
         selectInput(inputId = "selected_measure",
                     label = "Select a measure",
