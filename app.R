@@ -113,10 +113,9 @@ ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
                                  "</br>As much of the information for the MV2040 outcomes framework depends on data from external sources, <b>progress data is not yet available for some sources</b>.</br>",
                                  "</br>Hover over the bars for more information. For full details about the measures, see the <b>'Individual measures'</b> tab."))
 
-# circumplexes ________________________________________________________________________________________________________________________________________________________
-# order for circ data
+# circumplex ________________________________________________________________________________________________________________________________________________________
 
-# other version of the circumplex - only the percentages
+# data for circumplex
 circ_inds1 <- towards_target %>%
     ungroup() %>% 
     filter(desired == "Increase") %>% 
@@ -130,7 +129,7 @@ circ_inds1 <- towards_target %>%
     arrange(theme) %>% 
     mutate(text = str_replace_all(measure, " ", "\n"))
 
-# order
+# order of text
 circ_inds2 <- circ_inds1 %>% 
     select(text) %>% 
     pull()
@@ -139,7 +138,7 @@ circ_inds2 <- circ_inds1 %>%
 circ_inds3 <- circ_inds1 %>% 
     mutate(text = factor(text, levels = circ_inds2))
 
-# non-interactive circumplex - selected measures only
+# tooltip text
 str_model <- paste0("<tr><td>Measure </td><td>: %s</td></tr>", # string left padded
                     "<tr><td>Current: </td><td>%.01f%%</td></tr>", 
                     "<tr><td>Target: </td><td>%.01f%%</td></tr>")
@@ -148,6 +147,7 @@ circ_inds3$tooltip <- sprintf(str_model, circ_inds3$measure, circ_inds3$current,
 
 circ_inds3$tooltip <- paste0( "<table>", circ_inds3$tooltip, "</table>")
 
+#graph
 circ2 <- ggplot(circ_inds3, aes(text, current, fill = theme)) +
     geom_col(width = 1, col = "white", alpha = 0.5) + ylim(0, 100) + coord_polar() + #current
     geom_col(aes(text, target), alpha = 0.5, width = 1, col = "white") + ylim(0, 100) + coord_polar() + # target
@@ -572,6 +572,7 @@ server <- function(input, output) {
             select(measure) %>% 
             pull()
     })
+
     #takes filtered input by theme and outputs measures for selection
     output$measure_output <- renderUI({
         selectInput(inputId = "selected_measure",
