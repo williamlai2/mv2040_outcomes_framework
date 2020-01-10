@@ -483,7 +483,7 @@ body <- dashboardBody(
                                        "</br>You can hover over the wedges to see the the current state and the target for each measure.</br>",
                                        "</br> The graph shows progress towards the target for <b>selected measures only</b> (those measured as a percentage where the desired outcomes is an increase).",
                                        "The darker shading indicates the current state while the lighter shading indicates where we would like to be in 2040 (the target). Real percentage values have been used.</br>",
-                                       "<br>Note: The image size is fixed.</br>")), width = 12)
+                                       "<br>Note: The chart size is fixed.</br>")), width = 12)
                 ),
                 fluidRow(
                     girafeOutput("circ2")
