@@ -538,7 +538,8 @@ body <- dashboardBody(
                                        "<br>Note: The chart size is fixed.</br>")), width = 12)
                 ),
                 fluidRow(
-                    girafeOutput("circ2")
+                    girafeOutput("circ2") %>% 
+                        withSpinner(color="#31788F", type = getOption("spinner.type", default = 8)),
                 )
         ),
         
