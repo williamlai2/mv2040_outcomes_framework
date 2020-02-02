@@ -10,6 +10,7 @@ library(shinydashboard)
 library(shinycssloaders)
 library(apputils)
 library(ggiraph)
+
 #error testing
 options(rsconnect.http.trace = TRUE)
 options(rsconnect.http.verbose = TRUE)
@@ -438,7 +439,7 @@ body <- dashboardBody(
                 #commentary and rationale below the graph
                 fluidRow(
                     box(title = "Commentary", width = 6, textOutput('commentary')),
-                    box(title = "Rationale", width = 6, textOutput('rationale'))
+                    box(title = "Rationale for measure", width = 6, textOutput('rationale'))
                 ),
         ),
         # progress by theme content
