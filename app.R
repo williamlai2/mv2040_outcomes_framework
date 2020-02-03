@@ -398,7 +398,7 @@ body <- dashboardBody(
     ),
     #bigger text in boxes
     tags$p(
-        tags$style(HTML('.box { font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif; font-size: 14px; }'))
+        tags$style(HTML('.box { font-family: Helvetica, Arial, sans-serif; font-size: 14px; }'))
     ),
     
     tabItems(
