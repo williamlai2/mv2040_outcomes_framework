@@ -438,7 +438,7 @@ body <- dashboardBody(
                 fluidRow(
                     infoBoxOutput("ibox_desired"),
                     infoBoxOutput("ibox_progress"),
-                    infoBox(title = "Council's infulence", textOutput('council_inf'), icon = shiny::icon("clipboard"), color = "black")
+                    infoBoxOutput("ibox_influence")
                 ),
                 
                 #commentary and rationale below the graph
@@ -506,7 +506,7 @@ body <- dashboardBody(
                 h2("Summary of progress towards the 2040 targets by level of Council influence"),
                 br(),
                 fluidRow(
-                    infoBox(title = "Council's infulence", value = "Lead", icon = shiny::icon("clipboard"), color = "black", width = 3),
+                    infoBox(title = "Council's infulence", value = "Lead", icon = shiny::icon("users"), color = "black", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Lead") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Lead") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
@@ -515,21 +515,21 @@ body <- dashboardBody(
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
-                    infoBox(title = "Council's infulence", value = "Advocate", icon = shiny::icon("clipboard"), color = "black", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
-                             icon = shiny::icon("smile"), color = "aqua", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
-                             icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
-                             icon = shiny::icon("frown"), color = "maroon", width = 3),
-                ),
-                fluidRow(
-                    infoBox(title = "Council's infulence", value = "Contribute", icon = shiny::icon("clipboard"), color = "black", width = 3),
+                    infoBox(title = "Council's infulence", value = "Contribute", icon = shiny::icon("handshake"), color = "black", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                             icon = shiny::icon("frown"), color = "maroon", width = 3),
+                ),
+                fluidRow(
+                    infoBox(title = "Council's infulence", value = "Advocate", icon = shiny::icon("bullhorn"), color = "black", width = 3),
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                             icon = shiny::icon("smile"), color = "aqua", width = 3),
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
+                             icon = shiny::icon("meh"), color = "orange", width = 3),
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
@@ -812,6 +812,21 @@ server <- function(input, output) {
         }
         else {
             infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("meh"), color = "orange")
+        }
+    })
+    
+    # the influence box
+    output$ibox_influence <- renderInfoBox({
+        if (get_vals()$council_inf  == "Lead")
+        {
+            infoBox(title = "Council's influence", textOutput('council_inf'), icon = shiny::icon("users"), color = "black")
+        }
+        else if (get_vals()$council_inf  == "Contribute")
+        {
+            infoBox(title = "Council's influence", textOutput('council_inf'), icon = shiny::icon("handshake"), color = "black")
+        }
+        else {
+            infoBox(title = "Council's influence", textOutput('council_inf'), icon = shiny::icon("bullhorn"), color = "black")
         }
     })
     
