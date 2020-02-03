@@ -396,6 +396,11 @@ body <- dashboardBody(
         type = 'text/css', 
         '.bg-yellow {background-color: #E3A51E!important; }'
     ),
+    #bigger text in boxes
+    tags$p(
+        tags$style(HTML('.box { font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif; font-size: 14px; }'))
+    ),
+    
     tabItems(
         # First tab content
         tabItem(tabName = "measures",
