@@ -50,17 +50,17 @@ change_progress_data_full <- data_raw %>%
     left_join(indicator_list, by = "id") %>% 
     select(id, baseline, progress, desired) %>% 
     ungroup() %>% 
-    mutate(change = case_when(desired == "Increase" & progress > baseline ~ "Good",
-                              desired == "Increase" & progress < baseline ~ "Bad",
-                              desired == "Decrease" & progress < baseline ~ "Good",
-                              desired == "Decrease" & progress > baseline ~ "Bad",
+    mutate(change = case_when(desired == "Increase" & progress > baseline ~ "Positive",
+                              desired == "Increase" & progress < baseline ~ "Negative",
+                              desired == "Decrease" & progress < baseline ~ "Positive",
+                              desired == "Decrease" & progress > baseline ~ "Negative",
                               TRUE ~ "N/A")) 
 
 progress_by_theme <- change_progress_data_full %>% 
     left_join(indicator_list, by = "id") %>% 
     select(id, baseline, progress, desired = desired.x, change, theme) %>% 
     mutate(theme = factor(theme, levels = c("Fair", "Thriving", "Connected", "Green", "Beautiful"))) %>% 
-    mutate(change = factor(change, levels = c("Good", "N/A", "Bad"))) %>% 
+    mutate(change = factor(change, levels = c("Positive", "N/A", "Negative"))) %>% 
     group_by(theme, .drop=FALSE) %>% 
     count(change) %>% 
     ungroup() 
@@ -68,14 +68,14 @@ progress_by_theme <- change_progress_data_full %>%
 theme_pct <- progress_by_theme %>% 
     pivot_wider(names_from = "change", values_from = "n") %>% 
     clean_names() %>% 
-    mutate(total = good + n_a + bad) %>% 
-    mutate(pct_good = good/total, pct_na = n_a/total, pct_bad = bad/total)
+    mutate(total = positive + n_a + negative) %>% 
+    mutate(pct_positive = positive/total, pct_na = n_a/total, pct_negative = negative/total)
 
 progress_by_influence <- change_progress_data_full %>% 
     left_join(indicator_list, by = "id") %>% 
     select(id, baseline, progress, desired = desired.x, change, influence) %>% 
     mutate(influece = factor(influence, levels = c("Lead", "Advocate", "Contribute"))) %>% 
-    mutate(change = factor(change, levels = c("Good", "N/A", "Bad"))) %>% 
+    mutate(change = factor(change, levels = c("Positive", "N/A", "Negative"))) %>% 
     group_by(influence, .drop=FALSE) %>% 
     count(change) %>% 
     ungroup() 
@@ -83,8 +83,8 @@ progress_by_influence <- change_progress_data_full %>%
 influence_pct <- progress_by_influence %>% 
     pivot_wider(names_from = "change", values_from = "n") %>% 
     clean_names() %>% 
-    mutate(total = good + n_a + bad) %>% 
-    mutate(pct_good = good/total, pct_na = n_a/total, pct_bad = bad/total)
+    mutate(total = positive + n_a + negative) %>% 
+    mutate(pct_positive  = positive /total, pct_na = n_a/total, pct_negative = negative/total)
 
 ## colours for themes
 colour_table <- tibble(theme = c("Fair", "Thriving", "Connected", "Green", "Beautiful"),
@@ -128,7 +128,7 @@ towards_beautiful <- towards_target %>% filter(theme == "Beautiful")
 # text for box in individual themes
 ind_theme_text <- tags$body(HTML("<b>Notes:</b></br>",
                                  "Progress towards the target is calculated as <b>(the progress value - the baseline value) divided by (the target value - the baseline value) multiplited by 100</b>. This is rounded to one decimal place.</br>",
-                                 "</br>Progress of 100 per cent means that the target has been achieved. Positive values <b>('Good')</b> indicate progression towards the target. Negative values <b>('Bad')</b> indicate regression away from the target.</br>",
+                                 "</br>Progress of 100 per cent means that the target has been achieved. <b>Positive</b> values indicate progression towards the target. <b>Negative</b> values indicate regression away from the target.</br>",
                                  "</br>As much of the information for the MV2040 outcomes framework depends on data from external sources, <b>progress data is not yet available for some sources</b>.</br>",
                                  "</br>Hover over the bars for more information. For full details about the measures, see the <b>'Individual measures'</b> tab."))
 
@@ -453,47 +453,47 @@ body <- dashboardBody(
                 br(),
                 fluidRow(
                     infoBox(title = "Theme", value = "Fair", color = "red", width = 3, icon=icon(list(src = "fair.png", width="80px"), lib="local")),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Fair") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Thriving", color = "blue", width = 3, icon=icon(list(src = "thriving.png", width="80px"), lib="local")),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Thriving") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Connected", color = "purple", width = 3, icon=icon(list(src = "connected.png", width="80px"), lib="local")),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Connected") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Green", color = "green", width = 3, icon=icon(list(src = "green.png", width="80px"), lib="local")),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Green") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Theme", value = "Beautiful", color = "yellow", width = 3, icon=icon(list(src = "beautiful.png", width="80px"), lib="local")),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(theme_pct %>% filter(theme == "Beautiful") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
@@ -507,29 +507,29 @@ body <- dashboardBody(
                 br(),
                 fluidRow(
                     infoBox(title = "Council's infulence", value = "Lead", icon = shiny::icon("users"), color = "black", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Lead") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Lead") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Lead") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Lead") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Lead") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Council's infulence", value = "Contribute", icon = shiny::icon("handshake"), color = "black", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Contribute") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
                     infoBox(title = "Council's infulence", value = "Advocate", icon = shiny::icon("bullhorn"), color = "black", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_good) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Good' progress",
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_positive) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Positive' progress",
                              icon = shiny::icon("smile"), color = "aqua", width = 3),
                     valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_na) %>% pull(), accuracy = 1L), subtitle = "of measures with 'N/A' progress",
                              icon = shiny::icon("meh"), color = "orange", width = 3),
-                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_bad) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Bad' progress",
+                    valueBox(value = percent(influence_pct %>% filter(influence == "Advocate") %>% select(pct_negative) %>% pull(), accuracy = 1L), subtitle = "of measures with 'Negative' progress",
                              icon = shiny::icon("frown"), color = "maroon", width = 3),
                 ),
                 fluidRow(
@@ -802,11 +802,11 @@ server <- function(input, output) {
     
     # the progress towards desired change box
     output$ibox_progress <- renderInfoBox({
-        if (get_vals()$change_progress  == "Good")
+        if (get_vals()$change_progress  == "Positive")
         {
             infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("smile"), color = "aqua")
         }
-        else if (get_vals()$change_progress  == "Bad")
+        else if (get_vals()$change_progress  == "Negative")
         {
             infoBox(title = "Progress", textOutput('change_progress'), icon = shiny::icon("frown"), color = "maroon")
         }
