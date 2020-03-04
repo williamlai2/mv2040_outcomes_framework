@@ -11,10 +11,6 @@ library(shinycssloaders)
 library(apputils)
 library(ggiraph)
 
-#error testing
-options(rsconnect.http.trace = TRUE)
-options(rsconnect.http.verbose = TRUE)
-
 #disable scientific notation
 options(scipen = 999)
 
