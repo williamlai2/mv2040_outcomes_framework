@@ -277,7 +277,6 @@ ind_vals <- function(indicator_id) {
         select(value) %>% 
         pull()
     
-        
     #return list
     return_vals <- list("data" = data,"indicator_details" = ind, "source" = source, "commentary" = commentary, "target_source" = target_source, "rationale" = rationale, "format" = fmt,
                         "additional_info" = add_inf, "value_unit" = val_unit, "title" = title_det, "theme" = theme_det, "category" = category_det, "definition" = definition_det,
