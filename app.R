@@ -8,8 +8,8 @@ library(plotly)
 library(scales)
 library(shinydashboard)
 library(shinycssloaders)
-library(apputils)
-library(ggiraph)
+library(apputils) # overrrides the shinydashboard value box
+library(ggiraph) # for the labels in the circumplex
 
 #disable scientific notation
 options(scipen = 999)
