@@ -15,7 +15,7 @@ library(ggiraph) # for the labels in the circumplex
 options(scipen = 999)
 
 #data
-##read in data - this is reading from an extract of 19/259311
+##read in data - this is reading from an extract of 19/259311 - this spreadsheet controls everything
 data_raw <- read_excel("MV2040 Indicators and Outcomes DRAFT baseline- August 2019.XLSX", sheet = "data") %>% 
     clean_names() %>% 
     mutate(err_low = round(value - lower, 1), err_high = round(upper - value, 1))
